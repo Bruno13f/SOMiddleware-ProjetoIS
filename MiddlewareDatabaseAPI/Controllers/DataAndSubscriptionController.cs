@@ -1,4 +1,5 @@
 ﻿using System;
+using MiddlewareDatabaseAPI.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -16,12 +17,36 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         [Route("{application}/{container}/data/{data}")]
         [HttpGet]
-        public string GetData(string name)
+        public IHttpActionResult GetData(string data)
         {
-            return "value";
+            string queryString = "SELECT * FROM Data WHERE name = @data";
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                SqlCommand command = new SqlCommand(queryString, connection);
+                command.Parameters.AddWithValue("@data", data);
+
+                command.Connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        Data p = new Data
+                        {
+                            id = (int)reader["id"],
+                            name = (string)reader["name"],
+                            creation_dt = (DateTime)reader["creation_dt"],
+                            parent = (int)reader["parent"]
+                        };
+                        return Ok(p);
+                    }
+                }
+            }
+            return NotFound();
         }
 
-        [Route("{application}/{container}/subscription/{subscription}")]
+    [Route("{application}/{container}/subscription/{subscription}")]
         [HttpGet]
         public string GetSubscription(string name)
         {
