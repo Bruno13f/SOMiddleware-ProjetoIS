@@ -27,7 +27,7 @@ namespace MiddlewareDatabaseAPI.Controllers
         /*
         [Route("{application}")]
         [HttpPost]
-        public void PostContainer([FromBody] string application)
+        public void PostContainer([FromBody] string value)
         {
         }
         */
