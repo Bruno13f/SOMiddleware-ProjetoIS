@@ -32,14 +32,15 @@ namespace MiddlewareDatabaseAPI.Controllers
                 {
                     if (reader.Read())
                     {
-                        Data p = new Data
+                        Data d = new Data
                         {
                             id = (int)reader["id"],
                             name = (string)reader["name"],
+                            content = (string)reader["content"],
                             creation_dt = (DateTime)reader["creation_dt"],
                             parent = (int)reader["parent"]
                         };
-                        return Ok(p);
+                        return Ok(d);
                     }
                 }
             }
@@ -48,15 +49,45 @@ namespace MiddlewareDatabaseAPI.Controllers
 
     [Route("{application}/{container}/subscription/{subscription}")]
         [HttpGet]
-        public string GetSubscription(string name)
+        public void GetSubscription(string subscription)
         {
-            return "value";
         }
 
         [Route("{application}/{container}/data")]
         [HttpPost]
-        public void PostData([FromBody] string value)
+        public IHttpActionResult PostData([FromBody] Data value)
         {
+            string queryString = "INSERT INTO Data (name, content, parent, creation_dt) VALUES (@name, @content, @parent, @creation_dt)";
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                SqlCommand command = new SqlCommand(queryString, connection);
+                command.Parameters.AddWithValue("@name", value.name);
+                command.Parameters.AddWithValue("@content", value.content);
+                command.Parameters.AddWithValue("@parent", value.parent);
+                DateTime now = DateTime.UtcNow;
+                string isoDateTimeString = now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+
+                command.Parameters.AddWithValue("@creation_dt", isoDateTimeString);
+
+                try
+                {
+                    command.Connection.Open();
+                    int result = command.ExecuteNonQuery();
+                    if (result == 0)
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        return Ok();
+                    }
+                }
+                catch (Exception)
+                {
+                    return InternalServerError();
+                }
+            }
         }
 
         [Route("{application}/{container}/subscription")]
@@ -67,9 +98,40 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         [Route("{application}/{container}/data/{data}")]
         [HttpPut]
-        public void PutData(string name, [FromBody] string value)
+        public IHttpActionResult PutData(string name,[FromBody] Data updatedData)
         {
+            string updateQueryString = "UPDATE Data SET content = @content, parent = @parent, creation_dt = @creation_dt WHERE name = @data";
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                SqlCommand command = new SqlCommand(updateQueryString, connection);
+                command.Parameters.AddWithValue("@content", updatedData.content);
+                command.Parameters.AddWithValue("@parent", updatedData.parent);
+                DateTime now = DateTime.UtcNow;
+                string isoDateTimeString = now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                command.Parameters.AddWithValue("@creation_dt", isoDateTimeString);
+                command.Parameters.AddWithValue("@data", name);
+
+                try
+                {
+                    connection.Open();
+                    int result = command.ExecuteNonQuery();
+                    if (result == 0)
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        return Ok(updatedData);
+                    }
+                }
+                catch (Exception)
+                {
+                    return InternalServerError();
+                }
+            }
         }
+
 
         [Route("{application}/{container}/subscription/{subscription}")]
         [HttpPut]
