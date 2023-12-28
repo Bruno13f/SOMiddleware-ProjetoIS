@@ -24,11 +24,13 @@ namespace MiddlewareDatabaseAPI.Controllers
             return "value";
         }
 
+        /*
         [Route("{application}")]
         [HttpPost]
         public void PostContainer([FromBody] string application)
         {
         }
+        */
 
         [Route("{application}/{container}")]
         [HttpPut]

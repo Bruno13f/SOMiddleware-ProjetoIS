@@ -9,55 +9,150 @@ using System.Security.AccessControl;
 using MiddlewareDatabaseAPI.Models;
 
 namespace MiddlewareDatabaseAPI.Controllers
+
 {
     [RoutePrefix("api/somiod")]
+
     public class ApplicationController : ApiController
     {
-        private string connStr = Properties.Settings.Default.ConnStr;
 
+        private string connStr = Properties.Settings.Default.ConnStr;
 
         [Route("")]
         [HttpGet]
         public IHttpActionResult GetAllApplications()
         {
-            // verificar header somiod-discover: application 
-
-            List<String> ListOfApplications = new List<string>();
-            string queryString = "SELECT * FROM Application";
-
-            try
+            // Verify header somiod-discover: application 
+            HttpRequestMessage request = Request;
+            if (request.Headers.TryGetValues("somiod-discover", out IEnumerable<string> headerValues))
             {
-                using (SqlConnection connection = new SqlConnection(connStr))
-                {
-                    SqlCommand command = new SqlCommand(queryString, connection);
-                    command.Connection.Open();
+                string somiodDiscoverHeaderValue = headerValues.FirstOrDefault();
 
-                    using (SqlDataReader reader = command.ExecuteReader())
+                if (string.Equals(somiodDiscoverHeaderValue, "application", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Header is present and has the correct value
+                    List<string> listOfApplications = new List<string>();
+                    string queryString = "SELECT * FROM Application";
+
+                    try
                     {
-                        while (reader.Read())
+                        using (SqlConnection connection = new SqlConnection(connStr))
                         {
-                            String name = (string)reader["name"];
-                            ListOfApplications.Add(name);
+                            SqlCommand command = new SqlCommand(queryString, connection);
+                            command.Connection.Open();
+
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    string name = (string)reader["name"];
+                                    listOfApplications.Add(name);
+                                }
+                            }
                         }
+                        return Ok(listOfApplications);
+                    }
+                    catch (Exception)
+                    {
+                        // Handle exceptions appropriately
+                        return InternalServerError();
                     }
                 }
-                return Ok(ListOfApplications);
+                else
+                {
+                    // Header is present but has an incorrect value
+                    return BadRequest("Invalid value for somiod-discover header");
+                }
             }
-            catch (Exception)
+            else
             {
-                return null;
+                // Header is not present
+                return BadRequest("somiod-discover header is missing");
             }
         }
 
         [Route("{application}")]
         [HttpGet]
-        public IEnumerable<string> GetApplicationOrContainers(string application)
+        public IHttpActionResult GetApplicationOrContainers(string application)
         {
-            // verificar header somiod-discover: container
+            // Verify header somiod-discover: container
+            HttpRequestMessage request = Request;
+            if (request.Headers.TryGetValues("somiod-discover", out IEnumerable<string> headerValues))
+            {
+                string somiodDiscoverHeaderValue = headerValues.FirstOrDefault();
 
-            IEnumerable<string> headers = Request.Headers.Select(header => $"{header.Key}: {string.Join(", ", header.Value)}");
+                if (string.Equals(somiodDiscoverHeaderValue, "container", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Header is present and has the correct value
+                    List<string> listOfContainers= new List<string>();
+                    string queryString = "SELECT * FROM Container WHERE parent = @parentContainer";
 
-            return headers;
+                    try
+                    {
+                        using (SqlConnection connection = new SqlConnection(connStr))
+                        {
+                            SqlCommand command = new SqlCommand(queryString, connection);
+                            command.Parameters.AddWithValue("@parentContainer", application);
+                            command.Connection.Open();
+
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    string name = (string)reader["name"];
+                                    listOfContainers.Add(name);
+                                }
+                            }
+                        }
+                        return Ok(listOfContainers);
+                    }
+                    catch (Exception)
+                    {
+                        // Handle exceptions appropriately
+                        return InternalServerError();
+                    }
+                }
+                else
+                {
+                    // Header is present but has an incorrect value
+                    return BadRequest("Invalid value for somiod-discover header");
+                }
+            }
+            else
+            {
+                // Header is not present
+                string queryString = "SELECT * FROM Application WHERE name = @nameApllication";
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection(connStr))
+                    {
+                        SqlCommand command = new SqlCommand(queryString, connection);
+                        command.Parameters.AddWithValue("nameApllication", application);
+                        command.Connection.Open();
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                                if (reader.Read())
+                                {
+                                    //covert the registo da BD para product
+                                    Application app = new Application
+                                    {
+                                        id = (int)reader["id"],
+                                        name = (string)reader["name"],
+                                        creation_dt = (DateTime)reader["creation_dt"]
+                                    };
+                                    return Ok(app);
+                                }
+                            }
+                        }
+                    return NotFound();
+                }
+                catch (Exception)
+                {
+                    // Handle exceptions appropriately
+                    return InternalServerError();
+                }
+            }
         }
 
         [Route("")]
