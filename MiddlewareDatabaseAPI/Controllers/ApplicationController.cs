@@ -15,12 +15,13 @@ namespace MiddlewareDatabaseAPI.Controllers
     {
         private string connStr = Properties.Settings.Default.ConnStr;
 
+
         [Route("")]
         public IHttpActionResult GetAllApplications()
         {
             // verificar header somiod-discover: application 
 
-            List<Application> ListOfApplications = new List<Application>();
+            List<String> ListOfApplications = new List<string>();
             string queryString = "SELECT * FROM Application";
 
             try
@@ -34,18 +35,12 @@ namespace MiddlewareDatabaseAPI.Controllers
                     {
                         while (reader.Read())
                         {
-                            //covert the registo da BD para product
-                            Application p = new Application
-                            {
-                                //id = (int)reader["id"],
-                                name = (string)reader["name"],
-                                //creation_dt = (DateTime)reader["creation_dt"]
-                            };
-                            ListOfApplications.Add(p);
+                            String name = (string)reader["name"];
+                            ListOfApplications.Add(name);
                         }
                     }
                 }
-                return null;
+                return Ok(ListOfApplications);
             }
             catch (Exception)
             {
