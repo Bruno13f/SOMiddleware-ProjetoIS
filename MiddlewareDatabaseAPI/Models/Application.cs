@@ -5,7 +5,7 @@ using System.Web;
 
 namespace MiddlewareDatabaseAPI.Models
 {
-    public class Library
+    public class Application
     {
         public int id { get; set; }
         public string name { get; set; }

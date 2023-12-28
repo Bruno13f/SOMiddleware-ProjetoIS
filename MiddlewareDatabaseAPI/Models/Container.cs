@@ -5,7 +5,7 @@ using System.Web;
 
 namespace MiddlewareDatabaseAPI.Models
 {
-    public class Office
+    public class Container
     {
         public string id { get; set; }
         public string name { get; set;}
