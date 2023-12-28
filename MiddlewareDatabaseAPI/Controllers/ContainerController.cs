@@ -4,12 +4,15 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Data.SqlClient;
+using System.Security.AccessControl;
 
 namespace MiddlewareDatabaseAPI.Controllers
 {
     [RoutePrefix("api/somiod")]
     public class ContainerController : ApiController
     {
+        private string connStr = Properties.Settings.Default.ConnStr;
         // GET api/<controller>
         public IEnumerable<string> Get()
         {
