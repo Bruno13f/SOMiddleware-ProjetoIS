@@ -84,6 +84,38 @@ namespace MiddlewareDatabaseAPI.Controllers
                 if (string.Equals(somiodDiscoverHeaderValue, "container", StringComparison.OrdinalIgnoreCase))
                 {
                     // Header is present and has the correct value
+                    int id_app = 0;
+                    string firstQueryString = "SELECT * FROM Application WHERE name = @nameApplication";
+
+                    try
+                    {
+                        using (SqlConnection connection = new SqlConnection(connStr))
+                        {
+                            SqlCommand command = new SqlCommand(firstQueryString, connection);
+                            command.Parameters.AddWithValue("@nameApplication", application);
+                            command.Connection.Open();
+
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                if (reader.Read())
+                                {
+                                    id_app = (int)reader["id"];
+                                }
+                            }
+                        }
+                        if (id_app == 0)
+                        {
+                            // return NotFound();
+                            return BadRequest("não encontrado");
+                        }
+          
+                    }
+                    catch (Exception)
+                    {
+                        // Handle exceptions appropriately
+                        return InternalServerError();
+                    }
+
                     List<string> listOfContainers= new List<string>();
                     string queryString = "SELECT * FROM Container WHERE parent = @parentContainer";
 
@@ -92,7 +124,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                         using (SqlConnection connection = new SqlConnection(connStr))
                         {
                             SqlCommand command = new SqlCommand(queryString, connection);
-                            command.Parameters.AddWithValue("@parentContainer", application);
+                            command.Parameters.AddWithValue("@parentContainer", id_app);
                             command.Connection.Open();
 
                             using (SqlDataReader reader = command.ExecuteReader())
@@ -134,7 +166,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                         {
                                 if (reader.Read())
                                 {
-                                    //covert the registo da BD para product
+                                    //convert the registo da BD para Application
                                     Application app = new Application
                                     {
                                         id = (int)reader["id"],
