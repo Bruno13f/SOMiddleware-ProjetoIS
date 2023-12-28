@@ -13,30 +13,37 @@ namespace MiddlewareDatabaseAPI.Controllers
     public class ContainerController : ApiController
     {
         private string connStr = Properties.Settings.Default.ConnStr;
-        // GET api/<controller>
-        public IEnumerable<string> Get()
+
+        [Route("{application}")]
+        [HttpGet]
+        public IEnumerable<string> GetAllContainers()
         {
+            // verificar header somiod-discover: container
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/<controller>/5
-        public string Get(int id)
+        [Route("{application}/{container}")]
+        [HttpGet]
+        public string GetContainerOfApplication(string name)
         {
             return "value";
         }
 
-        // POST api/<controller>
+        [Route("{application}")]
+        [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody] string value)
+        [Route("{application}/{container}")]
+        [HttpPut]
+        public void Put(string name, [FromBody] string value)
         {
         }
 
-        // DELETE api/<controller>/5
-        public void Delete(int id)
+        [Route("{application}/{container}")]
+        [HttpDelete]
+        public void Delete(string name)
         {
         }
     }

@@ -13,30 +13,64 @@ namespace MiddlewareDatabaseAPI.Controllers
     public class DataAndSubscriptionController : ApiController
     {
         private string connStr = Properties.Settings.Default.ConnStr;
-        // GET api/<controller>
-        public IEnumerable<string> Get()
+
+        [Route("{application}/{container}")]
+        [HttpGet]
+        public IEnumerable<string> GetAllDataOrSubscription()
         {
+            // verificar header somiod-discover: data 
+            // verificar header somiod-discover: subscription 
+
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/<controller>/5
-        public string Get(int id)
+        [Route("{application}/{container}/data/{data}")]
+        [HttpGet]
+        public string GetData(string name)
         {
             return "value";
         }
 
-        // POST api/<controller>
-        public void Post([FromBody] string value)
+        [Route("{application}/{container}/subscription/{subscription}")]
+        [HttpGet]
+        public string GetSubscription(string name)
+        {
+            return "value";
+        }
+
+        [Route("{application}/{container}/data")]
+        [HttpPost]
+        public void PostData([FromBody] string value)
         {
         }
 
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody] string value)
+        [Route("{application}/{container}/subscription")]
+        [HttpPost]
+        public void PostSubscription([FromBody] string value)
         {
         }
 
-        // DELETE api/<controller>/5
-        public void Delete(int id)
+        [Route("{application}/{container}/data/{data}")]
+        [HttpPut]
+        public void PutData(string name, [FromBody] string value)
+        {
+        }
+
+        [Route("{application}/{container}/subscription/{subscription}")]
+        [HttpPut]
+        public void PutSubscription(string name, [FromBody] string value)
+        {
+        }
+
+        [Route("{application}/{container}/data/{data}")]
+        [HttpDelete]
+        public void DeleteData(string name)
+        {
+        }
+
+        [Route("{application}/{container}/subscription/{subscription}")]
+        [HttpDelete]
+        public void DeleteSubscription(string name)
         {
         }
     }

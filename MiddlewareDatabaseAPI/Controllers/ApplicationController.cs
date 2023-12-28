@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Data.SqlClient;
 using System.Security.AccessControl;
+using MiddlewareDatabaseAPI.Models;
 
 namespace MiddlewareDatabaseAPI.Controllers
 {
@@ -13,30 +14,64 @@ namespace MiddlewareDatabaseAPI.Controllers
     public class ApplicationController : ApiController
     {
         private string connStr = Properties.Settings.Default.ConnStr;
-        // GET api/<controller>
-        public IEnumerable<string> Get()
+
+        [HttpGet]
+        public IEnumerable<Application> GetAllApplications()
         {
-            return new string[] { "value1", "value2" };
+            // verificar header somiod-discover: application 
+
+            List<Application> ListOfApplications = new List<Application>();
+            string queryString = "SELECT * FROM Application";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connStr))
+                {
+                    SqlCommand command = new SqlCommand(queryString, connection);
+                    command.Connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            //covert the registo da BD para product
+                            Application p = new Application
+                            {
+                                name = (string)reader["Name"]
+                            };
+                            ListOfApplications.Add(p);
+                        }
+                    }
+                }
+                return ListOfApplications;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
-        // GET api/<controller>/5
-        public string Get(int id)
+        [Route("{application}")]
+        [HttpGet]
+        public string Get(string name)
         {
             return "value";
         }
 
-        // POST api/<controller>
+        [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody] string value)
+        [Route("{application}")]
+        [HttpPut]
+        public void Put(string name, [FromBody] string value)
         {
         }
 
-        // DELETE api/<controller>/5
-        public void Delete(int id)
+        [Route("{application}")]
+        [HttpDelete]
+        public void Delete(string name)
         {
         }
     }
