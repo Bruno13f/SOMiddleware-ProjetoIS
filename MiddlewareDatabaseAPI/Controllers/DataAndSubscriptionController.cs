@@ -36,6 +36,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                         {
                             id = (int)reader["id"],
                             name = (string)reader["name"],
+                            content = (string)reader["content"],
                             creation_dt = (DateTime)reader["creation_dt"],
                             parent = (int)reader["parent"]
                         };
