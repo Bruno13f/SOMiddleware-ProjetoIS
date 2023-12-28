@@ -15,8 +15,8 @@ namespace MiddlewareDatabaseAPI.Controllers
     {
         private string connStr = Properties.Settings.Default.ConnStr;
 
-        [HttpGet]
-        public IEnumerable<Application> GetAllApplications()
+        [Route("")]
+        public IHttpActionResult GetAllApplications()
         {
             // verificar header somiod-discover: application 
 
@@ -37,13 +37,15 @@ namespace MiddlewareDatabaseAPI.Controllers
                             //covert the registo da BD para product
                             Application p = new Application
                             {
-                                name = (string)reader["Name"]
+                                //id = (int)reader["id"],
+                                name = (string)reader["name"],
+                                //creation_dt = (DateTime)reader["creation_dt"]
                             };
                             ListOfApplications.Add(p);
                         }
                     }
                 }
-                return ListOfApplications;
+                return null;
             }
             catch (Exception)
             {
