@@ -14,16 +14,6 @@ namespace MiddlewareDatabaseAPI.Controllers
     {
         private string connStr = Properties.Settings.Default.ConnStr;
 
-        [Route("{application}/{container}")]
-        [HttpGet]
-        public IEnumerable<string> GetAllDataOrSubscription()
-        {
-            // verificar header somiod-discover: data 
-            // verificar header somiod-discover: subscription 
-
-            return new string[] { "value1", "value2" };
-        }
-
         [Route("{application}/{container}/data/{data}")]
         [HttpGet]
         public string GetData(string name)

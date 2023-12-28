@@ -17,6 +17,7 @@ namespace MiddlewareDatabaseAPI.Controllers
 
 
         [Route("")]
+        [HttpGet]
         public IHttpActionResult GetAllApplications()
         {
             // verificar header somiod-discover: application 
@@ -50,25 +51,30 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         [Route("{application}")]
         [HttpGet]
-        public string Get(string name)
+        public IEnumerable<string> GetApplicationOrContainers(string application)
         {
-            return "value";
+            // verificar header somiod-discover: container
+
+            IEnumerable<string> headers = Request.Headers.Select(header => $"{header.Key}: {string.Join(", ", header.Value)}");
+
+            return headers;
         }
 
+        [Route("")]
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void PostApplication([FromBody] string value)
         {
         }
 
         [Route("{application}")]
         [HttpPut]
-        public void Put(string name, [FromBody] string value)
+        public void PutApplication(string name, [FromBody] string application)
         {
         }
 
         [Route("{application}")]
         [HttpDelete]
-        public void Delete(string name)
+        public void DeleteApplication(string application)
         {
         }
     }

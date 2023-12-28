@@ -14,36 +14,31 @@ namespace MiddlewareDatabaseAPI.Controllers
     {
         private string connStr = Properties.Settings.Default.ConnStr;
 
-        [Route("{application}")]
-        [HttpGet]
-        public IEnumerable<string> GetAllContainers()
-        {
-            // verificar header somiod-discover: container
-            return new string[] { "value1", "value2" };
-        }
-
         [Route("{application}/{container}")]
         [HttpGet]
-        public string GetContainerOfApplication(string name)
+        public string GetContainerOrAllDataOrAllSubscriptions(string application, string container)
         {
+            // verificar header somiod-discover: data 
+            // verificar header somiod-discover: subscription 
+
             return "value";
         }
 
         [Route("{application}")]
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void PostContainer([FromBody] string application)
         {
         }
 
         [Route("{application}/{container}")]
         [HttpPut]
-        public void Put(string name, [FromBody] string value)
+        public void PutContainer(string application, string container, [FromBody] string value)
         {
         }
 
         [Route("{application}/{container}")]
         [HttpDelete]
-        public void Delete(string name)
+        public void DeleteContainer(string application, string container)
         {
         }
     }
