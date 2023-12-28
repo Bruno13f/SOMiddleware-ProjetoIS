@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Data.SqlClient;
 using System.Security.AccessControl;
+using MiddlewareDatabaseAPI.Models;
 
 namespace MiddlewareDatabaseAPI.Controllers
 {
@@ -16,12 +17,117 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         [Route("{application}/{container}")]
         [HttpGet]
-        public string GetContainerOrAllDataOrAllSubscriptions(string application, string container)
+        public IHttpActionResult GetContainerOrAllDataOrAllSubscriptions(string application, string container)
         {
-            // verificar header somiod-discover: data 
-            // verificar header somiod-discover: subscription 
 
-            return "value";
+            HttpRequestMessage request = Request;
+            if (request.Headers.TryGetValues("somiod-discover", out IEnumerable<string> headerValues))
+            {
+
+                string somiodDiscoverHeaderValue = headerValues.FirstOrDefault();
+
+                if (string.Equals(somiodDiscoverHeaderValue, "data", StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        List<string> listOfDatas = new List<string>();
+                        string queryString = "SELECT name FROM Data WHERE parent=(SELECT id FROM Container WHERE name=@nameContainer AND parent=(SELECT id FROM Application WHERE name=@nameApplication))";
+
+                        using (SqlConnection connection = new SqlConnection(connStr))
+                        {
+                            SqlCommand command = new SqlCommand(queryString, connection);
+                            connection.Open();
+                            command.Parameters.AddWithValue("@nameContainer", container);
+                            command.Parameters.AddWithValue("@nameApplication", application);
+
+
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    listOfDatas.Add((string)reader["name"]);
+                                }
+                                return Ok(listOfDatas);
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        return NotFound();
+                    }
+                }
+                else if (string.Equals(somiodDiscoverHeaderValue, "subscription", StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        List<string> listOfSubscriptions = new List<string>();
+                        string queryString = "SELECT name FROM Subscription WHERE parent=(SELECT id FROM Container WHERE name=@nameContainer AND parent=(SELECT id FROM Application WHERE name=@nameApplication))";
+
+                        using (SqlConnection connection = new SqlConnection(connStr))
+                        {
+                            SqlCommand command = new SqlCommand(queryString, connection);
+                            connection.Open();
+                            command.Parameters.AddWithValue("@nameContainer", container);
+                            command.Parameters.AddWithValue("@nameApplication", application);
+
+
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    listOfSubscriptions.Add((string)reader["name"]);
+                                }
+                                return Ok(listOfSubscriptions);
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        return NotFound();
+                    }
+                }
+                else
+                {
+                    return BadRequest("Invalid value for somiod-discover header");
+                }
+            }
+            else
+            {
+                try
+                {
+                    string queryString = "SELECT * FROM Container WHERE name = @nameContainer AND parent=(SELECT id FROM Application WHERE name=@nameApplication)";
+
+                    using (SqlConnection connection = new SqlConnection(connStr))
+                    {
+                        SqlCommand command = new SqlCommand(queryString, connection);
+                        connection.Open();
+                        command.Parameters.AddWithValue("@nameContainer", container);
+                        command.Parameters.AddWithValue("@nameApplication", application);
+
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                Container cont = new Container
+                                {
+                                    id = (int)reader["id"],
+                                    name = (string)reader["name"],
+                                    creation_dt = (DateTime)reader["creation_dt"],
+                                    parent = (int)reader["parent"]
+                                };
+                                return Ok(cont);
+                            }
+                        }
+                    }
+                    return NotFound();
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
+            }
+
         }
 
         /*
