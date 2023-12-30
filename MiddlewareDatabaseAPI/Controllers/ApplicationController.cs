@@ -58,7 +58,6 @@ namespace MiddlewareDatabaseAPI.Controllers
                     }
                     catch (Exception)
                     {
-                        // Handle exceptions appropriately
                         return InternalServerError();
                     }
                 }
@@ -118,7 +117,6 @@ namespace MiddlewareDatabaseAPI.Controllers
                     }
                     catch (Exception)
                     {
-                        // Handle exceptions appropriately
                         return InternalServerError();
                     }
                 }
@@ -160,7 +158,6 @@ namespace MiddlewareDatabaseAPI.Controllers
                 }
                 catch (Exception)
                 {
-                    // Handle exceptions appropriately
                     return InternalServerError();
                 }
             }
@@ -232,6 +229,8 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpPut]
         public IHttpActionResult PutApplication(string application, [FromBody] Application value)
         {
+
+
 
             int id = GetAppId(application);
             string queryString = "UPDATE Application SET name=@name WHERE id=@idApp";
@@ -334,14 +333,14 @@ namespace MiddlewareDatabaseAPI.Controllers
                         }
 
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         return InternalServerError();
                     }
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return InternalServerError();
             }
