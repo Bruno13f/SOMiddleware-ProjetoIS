@@ -66,7 +66,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                 command.Parameters.AddWithValue("@content", value.content);
                 command.Parameters.AddWithValue("@parent", value.parent);
                 DateTime now = DateTime.UtcNow;
-                string isoDateTimeString = now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                string isoDateTimeString = now.ToString("yyyy-MM-dd HH:mm:ss");
 
                 command.Parameters.AddWithValue("@creation_dt", isoDateTimeString);
 
