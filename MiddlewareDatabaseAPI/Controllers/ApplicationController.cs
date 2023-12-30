@@ -8,6 +8,8 @@ using System.Data.SqlClient;
 using System.Security.AccessControl;
 using MiddlewareDatabaseAPI.Models;
 using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
+using Application = MiddlewareDatabaseAPI.Models.Application;
 
 namespace MiddlewareDatabaseAPI.Controllers
 
@@ -85,37 +87,11 @@ namespace MiddlewareDatabaseAPI.Controllers
                 if (string.Equals(somiodDiscoverHeaderValue, "container", StringComparison.OrdinalIgnoreCase))
                 {
                     // Header is present and has the correct value
-                    int id_app = 0;
-                    string firstQueryString = "SELECT * FROM Application WHERE name = @nameApplication";
+                    int id_app = GetAppId(application);
 
-                    try
-                    {
-                        using (SqlConnection connection = new SqlConnection(connStr))
-                        {
-                            SqlCommand command = new SqlCommand(firstQueryString, connection);
-                            command.Parameters.AddWithValue("@nameApplication", application);
-                            command.Connection.Open();
-
-                            using (SqlDataReader reader = command.ExecuteReader())
-                            {
-                                if (reader.Read())
-                                {
-                                    id_app = (int)reader["id"];
-                                }
-                            }
-                        }
-                        if (id_app == 0)
-                        {
-                            // return NotFound();
-                            return BadRequest("não encontrado");
-                        }
-          
-                    }
-                    catch (Exception)
-                    {
-                        // Handle exceptions appropriately
-                        return InternalServerError();
-                    }
+                    if (id_app == 0)
+                        return NotFound();
+                    
 
                     List<string> listOfContainers= new List<string>();
                     string queryString = "SELECT * FROM Container WHERE parent = @parentContainer";
@@ -205,7 +181,7 @@ namespace MiddlewareDatabaseAPI.Controllers
 
                     SqlCommand command = new SqlCommand(queryString, connection);
                     DateTime now = DateTime.UtcNow;
-                    string isoDateTimeString = now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                    string isoDateTimeString = now.ToString("yyyy-MM-dd HH:mm:ss");
                     command.Parameters.AddWithValue("@name", value.name);
                     command.Parameters.AddWithValue("@creation_dt", isoDateTimeString);
 
@@ -238,29 +214,15 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpPut]
         public IHttpActionResult PutApplication(string application, [FromBody] Application value)
         {
-            int id = 0;
+            int id = GetAppId(application);
             String queryString = "UPDATE Application SET name=@name WHERE id=@idApp";
-            String queryApp = "SELECT * FROM Application WHERE name = @nameApplication";
+            //String queryApp = "SELECT * FROM Application WHERE name = @nameApplication";
 
             try
             {
 
                 using (SqlConnection connection = new SqlConnection(connStr))
                 {
-
-                    SqlCommand commandApp = new SqlCommand(queryApp, connection);
-                    commandApp.Parameters.AddWithValue("@nameApplication", application);
-                    commandApp.Connection.Open();
-
-                    using (SqlDataReader reader = commandApp.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            id = (int)reader["id"];
-                        }
-                    }
-
-                    commandApp.Connection.Close();
 
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Parameters.AddWithValue("@idApp", id);
@@ -296,6 +258,91 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpDelete]
         public void DeleteApplication(string application)
         {
+        }
+
+        //===================================================PERGUNTAR À STORA===================================================
+
+        [Route("{application}")]
+        [HttpPost]
+        public IHttpActionResult PostContainer(string application, [FromBody] Container value)
+        {
+
+            int idApp = GetAppId(application);
+            String queryString = "INSERT INTO Container VALUES (@name, @creation_dt, @parent)";
+
+            // aplicação nao existe
+            if (idApp == 0)
+                return NotFound();
+
+            try
+            {
+
+                using (SqlConnection connection = new SqlConnection(connStr))
+                {
+
+                    SqlCommand command = new SqlCommand(queryString, connection);
+                    command.Parameters.AddWithValue("@name", value.name);
+                    DateTime now = DateTime.UtcNow;
+                    string isoDateTimeString = now.ToString("yyyy-MM-dd HH:mm:ss");
+                    command.Parameters.AddWithValue("@creation_dt", isoDateTimeString);
+                    command.Parameters.AddWithValue("@parent", idApp);
+
+                    try
+                    {
+                        command.Connection.Open();
+                        if (command.ExecuteNonQuery() == 0)
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            return Ok();
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        return InternalServerError();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError();
+            }
+
+        }
+
+        private int GetAppId (string applicationName)
+        {
+            int id = 0;
+            String queryApp = "SELECT id FROM Application WHERE name = @nameApplication";
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+
+                SqlCommand commandApp = new SqlCommand(queryApp, connection);
+                commandApp.Parameters.AddWithValue("@nameApplication", applicationName);
+                commandApp.Connection.Open();
+
+                try
+                {
+                    using (SqlDataReader reader = commandApp.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            id = (int)reader["id"];
+                        }
+                    }
+                }catch (Exception ex)
+                {
+                    InternalServerError();
+                }
+
+            }
+
+            return id;
         }
     }
 }
