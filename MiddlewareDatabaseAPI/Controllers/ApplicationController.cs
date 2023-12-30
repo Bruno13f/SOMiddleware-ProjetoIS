@@ -171,21 +171,21 @@ namespace MiddlewareDatabaseAPI.Controllers
             // creation_dt inserido automaticamente, apenas necessário nome da app
 
 
-            string nameValue;
-
             if (value == null)
             {
-                nameValue = newName();
+                return BadRequest("The request body is empty.");
 
             }
             else if (value.name == null)
             {
-                nameValue = newName();
+                return BadRequest("The 'name' parameter is null.");
             }
+
+            string nameValue;
+            if (!uniqueName(value.name))
+                nameValue = newName(value.name);
             else
-            {
                 nameValue = value.name;
-            }
 
             string queryString = "INSERT INTO Application VALUES (@name, @creation_dt)";
 
@@ -230,7 +230,21 @@ namespace MiddlewareDatabaseAPI.Controllers
         public IHttpActionResult PutApplication(string application, [FromBody] Application value)
         {
 
+            if (value == null)
+            {
+                return BadRequest("The request body is empty.");
 
+            }
+            else if (value.name == null)
+            {
+                return BadRequest("The 'name' parameter is null.");
+            }
+
+            string nameValue;
+            if (!uniqueName(value.name))
+                nameValue = newName(value.name);
+            else
+                nameValue = value.name;
 
             int id = GetAppId(application);
             string queryString = "UPDATE Application SET name=@name WHERE id=@idApp";
@@ -244,7 +258,7 @@ namespace MiddlewareDatabaseAPI.Controllers
 
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Parameters.AddWithValue("@idApp", id);
-                    command.Parameters.AddWithValue("@name", value.name);
+                    command.Parameters.AddWithValue("@name", nameValue);
 
                     try
                     {
@@ -285,21 +299,22 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpPost]
         public IHttpActionResult PostContainer(string application, [FromBody] Container value)
         {
-            string nameValue;
 
             if (value == null)
             {
-                nameValue = newName();
+                return BadRequest("The request body is empty.");
 
             }
             else if (value.name == null)
             {
-                nameValue = newName();
+                return BadRequest("The 'name' parameter is null.");
             }
+
+            string nameValue;
+            if (!uniqueName(value.name))
+                nameValue = newName(value.name);
             else
-            {
                 nameValue = value.name;
-            }
 
             int idApp = GetAppId(application);
             string queryString = "INSERT INTO Container VALUES (@name, @creation_dt, @parent)";
@@ -380,7 +395,42 @@ namespace MiddlewareDatabaseAPI.Controllers
             return id;
         }
 
-        private string newName()
+        private bool uniqueName(string nameValue)
+        {
+            List<string> listOfApplications = new List<string>();
+            string helpQuerryString = "SELECT * FROM Application";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connStr))
+                {
+                    SqlCommand command = new SqlCommand(helpQuerryString, connection);
+                    command.Connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            listOfApplications.Add((string)reader["name"]);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                InternalServerError();
+            }
+
+            foreach (string name in listOfApplications)
+            {
+                if (name == nameValue)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private string newName(string nameValue)
         {
             Random random = new Random();
             const string chars = "abcdefghijklmnopqrstuvwxyz";
@@ -396,41 +446,9 @@ namespace MiddlewareDatabaseAPI.Controllers
                     word[i] = chars[random.Next(chars.Length)];
                 }
 
-                List<string> listOfApplications = new List<string>();
-                string helpQuerryString = "SELECT * FROM Application";
-
-                try
-                {
-                    using (SqlConnection connection = new SqlConnection(connStr))
-                    {
-                        SqlCommand command = new SqlCommand(helpQuerryString, connection);
-                        command.Connection.Open();
-
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                listOfApplications.Add((string)reader["name"]);
-                            }
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    InternalServerError();
-                }
-
-
-                string nameValue = new String(word);
-
-                flag = false;
-                foreach (string name in listOfApplications)
-                {
-                    if (name == nameValue)
-                        flag = true;
-                }
+                flag = !uniqueName(new String(word));
             }
-            return "unknown_" + new string(word);
+            return nameValue + "_" + new String(word);
         }
     }
 }
