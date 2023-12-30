@@ -96,22 +96,21 @@ namespace MiddlewareDatabaseAPI.Controllers
         {
         }
 
-        [Route("{application}/{container}/subscription/{subscription}")]
-        [HttpPut]
-        public void PutSubscription(string name, [FromBody] string value)
-        {
-        }
-
         [Route("{application}/{container}/data/{data}")]
-        [HttpDelete]
-        public IHttpActionResult DeleteData(string data)
+        [HttpPut]
+        public IHttpActionResult PutData(string name,[FromBody] Data updatedData)
         {
-            string deleteQueryString = "DELETE FROM Data WHERE name = @data";
+            string updateQueryString = "UPDATE Data SET content = @content, parent = @parent, creation_dt = @creation_dt WHERE name = @data";
 
             using (SqlConnection connection = new SqlConnection(connStr))
             {
-                SqlCommand command = new SqlCommand(deleteQueryString, connection);
-                command.Parameters.AddWithValue("@data", data);
+                SqlCommand command = new SqlCommand(updateQueryString, connection);
+                command.Parameters.AddWithValue("@content", updatedData.content);
+                command.Parameters.AddWithValue("@parent", updatedData.parent);
+                DateTime now = DateTime.UtcNow;
+                string isoDateTimeString = now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                command.Parameters.AddWithValue("@creation_dt", isoDateTimeString);
+                command.Parameters.AddWithValue("@data", name);
 
                 try
                 {
@@ -123,7 +122,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                     }
                     else
                     {
-                        return Ok();
+                        return Ok(updatedData);
                     }
                 }
                 catch (Exception)
@@ -131,6 +130,19 @@ namespace MiddlewareDatabaseAPI.Controllers
                     return InternalServerError();
                 }
             }
+        }
+
+
+        [Route("{application}/{container}/subscription/{subscription}")]
+        [HttpPut]
+        public void PutSubscription(string name, [FromBody] string value)
+        {
+        }
+
+        [Route("{application}/{container}/data/{data}")]
+        [HttpDelete]
+        public void DeleteData(string name)
+        {
         }
 
         [Route("{application}/{container}/subscription/{subscription}")]

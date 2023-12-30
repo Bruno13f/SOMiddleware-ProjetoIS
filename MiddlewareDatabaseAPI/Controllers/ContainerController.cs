@@ -132,14 +132,13 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         }
 
-
-        //[Route("{application}")]
+        
+        /*[Route("{application}")]
         [HttpPost]
-        public IHttpActionResult PostContainer(string application,string container, [FromBody] Container value)
+        public void PostContainer([FromBody] string value)
         {
-            return Ok();
-        }
-
+        }*/
+        
 
         [Route("{application}/{container}")]
         [HttpPut]
