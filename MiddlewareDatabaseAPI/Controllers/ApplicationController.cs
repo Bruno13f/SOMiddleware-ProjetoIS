@@ -173,7 +173,24 @@ namespace MiddlewareDatabaseAPI.Controllers
             // TODO - criar container automaticamente ?? 
             // creation_dt inserido automaticamente, apenas necessário nome da app
 
-            String queryString = "INSERT INTO Application VALUES (@name, @creation_dt)";
+
+            string nameValue;
+
+            if (value == null)
+            {
+                nameValue = newName();
+
+            }
+            else if (value.name == null)
+            {
+                nameValue = newName();
+            }
+            else
+            {
+                nameValue = value.name;
+            }
+
+            string queryString = "INSERT INTO Application VALUES (@name, @creation_dt)";
 
             try
             {
@@ -183,7 +200,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                     SqlCommand command = new SqlCommand(queryString, connection);
                     DateTime now = DateTime.UtcNow;
                     string isoDateTimeString = now.ToString("yyyy-MM-dd HH:mm:ss");
-                    command.Parameters.AddWithValue("@name", value.name);
+                    command.Parameters.AddWithValue("@name", nameValue);
                     command.Parameters.AddWithValue("@creation_dt", isoDateTimeString);
 
                     try
@@ -215,8 +232,9 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpPut]
         public IHttpActionResult PutApplication(string application, [FromBody] Application value)
         {
+
             int id = GetAppId(application);
-            String queryString = "UPDATE Application SET name=@name WHERE id=@idApp";
+            string queryString = "UPDATE Application SET name=@name WHERE id=@idApp";
             //String queryApp = "SELECT * FROM Application WHERE name = @nameApplication";
 
             try
@@ -267,9 +285,24 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpPost]
         public IHttpActionResult PostContainer(string application, [FromBody] Container value)
         {
+            string nameValue;
+
+            if (value == null)
+            {
+                nameValue = newName();
+
+            }
+            else if (value.name == null)
+            {
+                nameValue = newName();
+            }
+            else
+            {
+                nameValue = value.name;
+            }
 
             int idApp = GetAppId(application);
-            String queryString = "INSERT INTO Container VALUES (@name, @creation_dt, @parent)";
+            string queryString = "INSERT INTO Container VALUES (@name, @creation_dt, @parent)";
 
             // aplicação nao existe
             if (idApp == 0)
@@ -282,7 +315,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                 {
 
                     SqlCommand command = new SqlCommand(queryString, connection);
-                    command.Parameters.AddWithValue("@name", value.name);
+                    command.Parameters.AddWithValue("@name", nameValue);
                     DateTime now = DateTime.UtcNow;
                     string isoDateTimeString = now.ToString("yyyy-MM-dd HH:mm:ss");
                     command.Parameters.AddWithValue("@creation_dt", isoDateTimeString);
@@ -318,7 +351,7 @@ namespace MiddlewareDatabaseAPI.Controllers
         private int GetAppId(string applicationName)
         {
             int id = 0;
-            String queryApp = "SELECT id FROM Application WHERE name = @nameApplication";
+            string queryApp = "SELECT id FROM Application WHERE name = @nameApplication";
 
             using (SqlConnection connection = new SqlConnection(connStr))
             {
@@ -345,6 +378,59 @@ namespace MiddlewareDatabaseAPI.Controllers
             }
 
             return id;
+        }
+
+        private string newName()
+        {
+            Random random = new Random();
+            const string chars = "abcdefghijklmnopqrstuvwxyz";
+
+            char[] word = new char[4];
+
+            bool flag = true;
+            while (flag)
+            {
+
+                for (int i = 0; i < 4; i++)
+                {
+                    word[i] = chars[random.Next(chars.Length)];
+                }
+
+                List<string> listOfApplications = new List<string>();
+                string helpQuerryString = "SELECT * FROM Application";
+
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection(connStr))
+                    {
+                        SqlCommand command = new SqlCommand(helpQuerryString, connection);
+                        command.Connection.Open();
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                listOfApplications.Add((string)reader["name"]);
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    InternalServerError();
+                }
+
+
+                string nameValue = new String(word);
+
+                flag = false;
+                foreach (string name in listOfApplications)
+                {
+                    if (name == nameValue)
+                        flag = true;
+                }
+            }
+            return "unknown_" + new string(word);
         }
     }
 }
