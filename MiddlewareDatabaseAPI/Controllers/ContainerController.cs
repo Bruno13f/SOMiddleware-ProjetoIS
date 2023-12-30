@@ -49,13 +49,22 @@ namespace MiddlewareDatabaseAPI.Controllers
                                 {
                                     listOfDatas.Add((string)reader["name"]);
                                 }
-                                return Ok(listOfDatas);
                             }
                         }
+
+                        if (listOfDatas.Count > 0)
+                        {
+                            return Ok(listOfDatas);
+                        }
+                        else
+                        {
+                            return NotFound();
+                        }
+
                     }
                     catch (Exception)
                     {
-                        return NotFound();
+                        return InternalServerError();
                     }
                 }    //Verificação se no cabeçalho do Header a opção somiod-discover têm o valor subscription
                 else if (string.Equals(somiodDiscoverHeaderValue, "subscription", StringComparison.OrdinalIgnoreCase))
@@ -79,13 +88,22 @@ namespace MiddlewareDatabaseAPI.Controllers
                                 {
                                     listOfSubscriptions.Add((string)reader["name"]);
                                 }
-                                return Ok(listOfSubscriptions);
                             }
                         }
+
+                        if (listOfSubscriptions.Count > 0)
+                        {
+                            return Ok(listOfSubscriptions);
+                        }
+                        else
+                        {
+                            return NotFound();
+                        }
+
                     }
                     catch (Exception)
                     {
-                        return NotFound();
+                       return InternalServerError();
                     }
                 }
                 else
