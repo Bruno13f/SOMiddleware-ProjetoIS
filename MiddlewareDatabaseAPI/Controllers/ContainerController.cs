@@ -7,6 +7,7 @@ using System.Web.Http;
 using System.Data.SqlClient;
 using System.Security.AccessControl;
 using MiddlewareDatabaseAPI.Models;
+using System.Linq.Expressions;
 
 namespace MiddlewareDatabaseAPI.Controllers
 {
@@ -20,8 +21,10 @@ namespace MiddlewareDatabaseAPI.Controllers
         public IHttpActionResult GetContainerOrAllDataOrAllSubscriptions(string application, string container)
         {
 
-            if (verifyOwnership(application, container) == 0)
+            int[] values = verifyOwnership(application, container);
+            if (values[0] != values[1])
                 return NotFound();
+
 
             HttpRequestMessage request = Request;
             //Verificação se no cabeçalho do Header existe a opção somiod-discover
@@ -149,19 +152,57 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         [Route("{application}/{container}")]
         [HttpPut]
-        public void PutContainer(string application, string container, [FromBody] string value)
+        public IHttpActionResult PutContainer(string application, string container, [FromBody] Container value)
         {
+            int[] values = verifyOwnership(application, container);
+            if (values[0] != values[1])
+                return NotFound();
 
+            string queryString = "UPDATE Container SET name=@name WHERE id=@idCont";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connStr))
+                {
+                    SqlCommand command = new SqlCommand(queryString, connection);
+                    command.Parameters.AddWithValue("@idCont", values[2]);
+                    command.Parameters.AddWithValue("@name", value.name);
+
+                    try
+                    {
+                        command.Connection.Open();
+                        if (command.ExecuteNonQuery() == 0)
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            return Ok();
+                        }
+
+                    }
+                    catch (Exception ex) 
+                    {
+                        return InternalServerError();
+                    }
+                
+                }
+
+            }catch(Exception ex)
+            {
+                return InternalServerError();
+            }
         }
 
         [Route("{application}/{container}")]
         [HttpDelete]
         public IHttpActionResult DeleteContainer(string application, string container)
         {
-            if (verifyOwnership(application,container) == 0)
-            {
+            // falta eliminar data e subscriptions se existirem
+
+            int[] values = verifyOwnership(application, container);
+            if (values[0] != values[1])
                 return NotFound();
-            }
 
             try
             {
@@ -198,11 +239,11 @@ namespace MiddlewareDatabaseAPI.Controllers
             }
         }
 
-        private int verifyOwnership (string application, string container)
+        private int[] verifyOwnership (string application, string container)
         {
-            int idApp = 0, idContParent = 0;
+            int idApp = 0, idContParent = 0, idCont = 0;
             string queryApp = "SELECT id FROM Application WHERE name = @nameApplication";
-            string queryCont = "SELECT parent FROM Container WHERE name = @nameContainer";
+            string queryCont = "SELECT id, parent FROM Container WHERE name = @nameContainer";
 
             using (SqlConnection connection = new SqlConnection(connStr)) { 
 
@@ -217,6 +258,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                         if (reader.Read())
                         {
                             idContParent = (int)reader["parent"];
+                            idCont = (int)reader["id"];
                         }
                     }
                 }
@@ -249,7 +291,7 @@ namespace MiddlewareDatabaseAPI.Controllers
 
             }
 
-            return idApp == idContParent ? 1 : 0;
+            return new int[] { idApp, idContParent, idCont };
         }
 
 

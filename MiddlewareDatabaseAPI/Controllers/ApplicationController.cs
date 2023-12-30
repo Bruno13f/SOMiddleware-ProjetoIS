@@ -276,6 +276,7 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpDelete]
         public void DeleteApplication(string application)
         {
+            // falta eliminar container, data e subscriptions se existirem
         }
 
         //===================================================PERGUNTAR À STORA===================================================
