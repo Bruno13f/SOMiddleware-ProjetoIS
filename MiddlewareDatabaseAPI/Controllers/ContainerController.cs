@@ -21,11 +21,13 @@ namespace MiddlewareDatabaseAPI.Controllers
         {
 
             HttpRequestMessage request = Request;
+            //Verificação se no cabeçalho do Header existe a opção somiod-discover
             if (request.Headers.TryGetValues("somiod-discover", out IEnumerable<string> headerValues))
             {
 
                 string somiodDiscoverHeaderValue = headerValues.FirstOrDefault();
 
+                //Verificação se no cabeçalho do Header a opção somiod-discover têm o valor data
                 if (string.Equals(somiodDiscoverHeaderValue, "data", StringComparison.OrdinalIgnoreCase))
                 {
                     try
@@ -55,7 +57,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                     {
                         return NotFound();
                     }
-                }
+                }    //Verificação se no cabeçalho do Header a opção somiod-discover têm o valor subscription
                 else if (string.Equals(somiodDiscoverHeaderValue, "subscription", StringComparison.OrdinalIgnoreCase))
                 {
                     try
@@ -130,24 +132,59 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         }
 
-        /*
-        [Route("{application}")]
+
+        //[Route("{application}")]
         [HttpPost]
-        public void PostContainer([FromBody] string value)
+        public IHttpActionResult PostContainer(string application,string container, [FromBody] Container value)
         {
+            return Ok();
         }
-        */
+
 
         [Route("{application}/{container}")]
         [HttpPut]
         public void PutContainer(string application, string container, [FromBody] string value)
         {
+
         }
 
         [Route("{application}/{container}")]
         [HttpDelete]
-        public void DeleteContainer(string application, string container)
+        public IHttpActionResult DeleteContainer(string application, string container)
         {
+            try
+            {
+                string queryString = "DELETE Container WHERE name=@name";
+
+                using (SqlConnection connection = new SqlConnection(connStr))
+                {
+                    SqlCommand command = new SqlCommand(queryString, connection);
+                    command.Parameters.AddWithValue("@name", container);
+
+                    try
+                    {
+                        command.Connection.Open();
+                        int rows = command.ExecuteNonQuery();
+                        if (rows > 0)
+                        {
+                            return Ok();
+                        }
+                        else
+                        {
+                            return NotFound();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return InternalServerError();
+                    }
+                }
+
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
         }
     }
 }
