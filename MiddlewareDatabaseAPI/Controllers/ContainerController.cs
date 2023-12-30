@@ -239,7 +239,7 @@ namespace MiddlewareDatabaseAPI.Controllers
             }
         }
 
-        private int[] verifyOwnership (string application, string container)
+        public int[] verifyOwnership (string application, string container)
         {
             int idApp = 0, idContParent = 0, idCont = 0;
             string queryApp = "SELECT id FROM Application WHERE name = @nameApplication";
