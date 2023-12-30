@@ -54,9 +54,10 @@ namespace MiddlewareDatabaseAPI.Controllers
         }
 
         [Route("{application}/{container}/data")]
-        [HttpPost]
-        public IHttpActionResult PostData([FromBody] Data value)
+        [HttpGet]
+        public IHttpActionResult PostData(string application, string container, [FromBody] Data value)
         {
+
             string queryString = "INSERT INTO Data (name, content, parent, creation_dt) VALUES (@name, @content, @parent, @creation_dt)";
 
             using (SqlConnection connection = new SqlConnection(connStr))
@@ -83,38 +84,34 @@ namespace MiddlewareDatabaseAPI.Controllers
                         return Ok();
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    return InternalServerError();
+                    return InternalServerError(ex);
                 }
             }
         }
 
         [Route("{application}/{container}/subscription")]
         [HttpPost]
-        public void PostSubscription([FromBody] string value)
+        public IHttpActionResult PostSubscription([FromBody] Subscription value)
         {
-        }
-
-        [Route("{application}/{container}/data/{data}")]
-        [HttpPut]
-        public IHttpActionResult PutData(string name,[FromBody] Data updatedData)
-        {
-            string updateQueryString = "UPDATE Data SET content = @content, parent = @parent, creation_dt = @creation_dt WHERE name = @data";
+            string queryString = "INSERT INTO Subscription (name, event, endpoint, parent, creation_dt) VALUES (@name, @event, @endpoint, @parent, @creation_dt)";
 
             using (SqlConnection connection = new SqlConnection(connStr))
             {
-                SqlCommand command = new SqlCommand(updateQueryString, connection);
-                command.Parameters.AddWithValue("@content", updatedData.content);
-                command.Parameters.AddWithValue("@parent", updatedData.parent);
+                SqlCommand command = new SqlCommand(queryString, connection);
+                command.Parameters.AddWithValue("@name", value.name);
+                command.Parameters.AddWithValue("@event", value.event_mqqt);
+                command.Parameters.AddWithValue("@endpoint", value.endpoint);
+                command.Parameters.AddWithValue("@parent", value.parent);
                 DateTime now = DateTime.UtcNow;
-                string isoDateTimeString = now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                string isoDateTimeString = now.ToString("yyyy-MM-dd HH:mm:ss");
+
                 command.Parameters.AddWithValue("@creation_dt", isoDateTimeString);
-                command.Parameters.AddWithValue("@data", name);
 
                 try
                 {
-                    connection.Open();
+                    command.Connection.Open();
                     int result = command.ExecuteNonQuery();
                     if (result == 0)
                     {
@@ -122,21 +119,14 @@ namespace MiddlewareDatabaseAPI.Controllers
                     }
                     else
                     {
-                        return Ok(updatedData);
+                        return Ok();
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    return InternalServerError();
+                    return InternalServerError(ex);
                 }
             }
-        }
-
-
-        [Route("{application}/{container}/subscription/{subscription}")]
-        [HttpPut]
-        public void PutSubscription(string name, [FromBody] string value)
-        {
         }
 
         [Route("{application}/{container}/data/{data}")]

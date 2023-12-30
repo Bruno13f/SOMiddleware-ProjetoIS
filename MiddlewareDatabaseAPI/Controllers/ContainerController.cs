@@ -20,6 +20,9 @@ namespace MiddlewareDatabaseAPI.Controllers
         public IHttpActionResult GetContainerOrAllDataOrAllSubscriptions(string application, string container)
         {
 
+            if (verifyOwnership(application, container) == 0)
+                return NotFound();
+
             HttpRequestMessage request = Request;
             //Verificação se no cabeçalho do Header existe a opção somiod-discover
             if (request.Headers.TryGetValues("somiod-discover", out IEnumerable<string> headerValues))
@@ -52,14 +55,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                             }
                         }
 
-                        if (listOfDatas.Count > 0)
-                        {
-                            return Ok(listOfDatas);
-                        }
-                        else
-                        {
-                            return NotFound();
-                        }
+                        return Ok(listOfDatas);
 
                     }
                     catch (Exception)
@@ -91,14 +87,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                             }
                         }
 
-                        if (listOfSubscriptions.Count > 0)
-                        {
-                            return Ok(listOfSubscriptions);
-                        }
-                        else
-                        {
-                            return NotFound();
-                        }
+                        return Ok(listOfSubscriptions);
 
                     }
                     catch (Exception)
@@ -169,6 +158,11 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteContainer(string application, string container)
         {
+            if (verifyOwnership(application,container) == 0)
+            {
+                return NotFound();
+            }
+
             try
             {
                 string queryString = "DELETE Container WHERE name=@name";
@@ -203,5 +197,92 @@ namespace MiddlewareDatabaseAPI.Controllers
                 return InternalServerError();
             }
         }
+
+        private int verifyOwnership (string application, string container)
+        {
+            int idApp = 0, idContParent = 0;
+            string queryApp = "SELECT id FROM Application WHERE name = @nameApplication";
+            string queryCont = "SELECT parent FROM Container WHERE name = @nameContainer";
+
+            using (SqlConnection connection = new SqlConnection(connStr)) { 
+
+                SqlCommand commandCont = new SqlCommand(queryCont, connection);
+                commandCont.Parameters.AddWithValue("@nameContainer", container);
+                commandCont.Connection.Open();
+
+                try
+                {
+                    using (SqlDataReader reader = commandCont.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            idContParent = (int)reader["parent"];
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    InternalServerError();
+                }
+
+
+                commandCont.Connection.Close();
+
+                SqlCommand commandApp = new SqlCommand(queryApp, connection);
+                commandApp.Parameters.AddWithValue("@nameApplication", application);
+                commandApp.Connection.Open();
+
+                try
+                {
+                    using (SqlDataReader reader = commandApp.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            idApp = (int)reader["id"];
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    InternalServerError();
+                }
+
+            }
+
+            return idApp == idContParent ? 1 : 0;
+        }
+
+
+        //===================================================PERGUNTAR À STORA===================================================
+
+        /*[Route("{application}/{container}")]
+        [HttpPost]
+        public IHttpActionResult PostDataOrSubscription([FromBody] RequestDataOrSubscription value)
+        {
+            // Assuming DataAndSubscriptionController has a parameterless constructor
+            DataAndSubscriptionController controller = new DataAndSubscriptionController();
+
+            if (value.res_type == "data")
+            {
+                return controller.PostData(new Data { name = value.name, content = value.content, parent = value.parent });
+            }
+
+            if (value.res_type == "subscription")
+            {
+                return controller.PostSubscription((Subscription)value);
+            }
+
+            return BadRequest("Invalid res_type");
+        }
+
+        public class RequestDataOrSubscription
+        {
+            public string res_type { get; set; }
+            public string name {  get; set; }
+            public int parent { get; set; }
+            public string content { get; set; }
+            public string event_mqtt { get; set; }
+            public string endpoint { get; set; }
+        }*/
     }
 }

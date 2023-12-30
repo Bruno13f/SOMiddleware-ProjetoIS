@@ -16,6 +16,7 @@ namespace MiddlewareDatabaseAPI.Controllers
 {
     [RoutePrefix("api/somiod")]
 
+
     public class ApplicationController : ApiController
     {
 
@@ -314,7 +315,7 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         }
 
-        private int GetAppId (string applicationName)
+        private int GetAppId(string applicationName)
         {
             int id = 0;
             String queryApp = "SELECT id FROM Application WHERE name = @nameApplication";
@@ -335,7 +336,8 @@ namespace MiddlewareDatabaseAPI.Controllers
                             id = (int)reader["id"];
                         }
                     }
-                }catch (Exception ex)
+                }
+                catch (Exception)
                 {
                     InternalServerError();
                 }
