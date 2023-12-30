@@ -131,8 +131,45 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         [Route("{application}/{container}/data/{data}")]
         [HttpDelete]
-        public void DeleteData(string name)
+        public IHttpActionResult DeleteData(string application, string container, string data)
         {
+            if (verifyDataContApp(application, container, data) == 0)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                string queryString = "DELETE Data WHERE name=@name";
+
+                using (SqlConnection connection = new SqlConnection(connStr))
+                {
+                    SqlCommand command = new SqlCommand(queryString, connection);
+                    command.Parameters.AddWithValue("@name", data);
+
+                    try
+                    {
+                        command.Connection.Open();
+                        int rows = command.ExecuteNonQuery();
+                        if (rows > 0)
+                        {
+                            return Ok();
+                        }
+                        else
+                        {
+                            return NotFound();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return InternalServerError();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }
         }
 
         [Route("{application}/{container}/subscription/{subscription}")]
@@ -140,5 +177,112 @@ namespace MiddlewareDatabaseAPI.Controllers
         public void DeleteSubscription(string name)
         {
         }
+
+        private int verifyDataContApp(string application, string container, string data)
+        {
+            int idApp = 0, idContParent = 0, idDataParent = 0, idContID = 0;
+            string queryAppid = "SELECT id FROM Application WHERE name = @nameApplication";
+            string queryContid = "SELECT id FROM Container WHERE name = @nameApplication";
+            string queryContParent = "SELECT parent FROM Container WHERE name = @nameContainer";
+            string queryDataparent = "SELECT parent FROM Data WHERE name = @nameData";
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                SqlCommand commandContID = new SqlCommand(queryContid, connection);
+                commandContID.Parameters.AddWithValue("@nameContainer", container);
+                commandContID.Connection.Open();
+
+                try
+                {
+                    using (SqlDataReader reader = commandContID.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            idContID = (int)reader["parent"];
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    InternalServerError();
+                }
+
+
+                commandContID.Connection.Close();
+
+                SqlCommand commandDataP = new SqlCommand(queryDataparent, connection);
+                commandDataP.Parameters.AddWithValue("@nameData", data);
+                commandDataP.Connection.Open();
+
+                try
+                {
+                    using (SqlDataReader reader = commandDataP.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            idDataParent = (int)reader["parent"];
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    InternalServerError();
+                }
+
+
+                commandDataP.Connection.Close();
+
+                SqlCommand commandContP = new SqlCommand(queryContParent, connection);
+                commandContP.Parameters.AddWithValue("@nameContainer", container);
+                commandContP.Connection.Open();
+
+                try
+                {
+                    using (SqlDataReader reader = commandContP.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            idContParent = (int)reader["parent"];
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    InternalServerError();
+                }
+
+                commandContP.Connection.Close();
+
+                SqlCommand commandApp = new SqlCommand(queryAppid, connection);
+                commandApp.Parameters.AddWithValue("@nameApplication", application);
+                commandApp.Connection.Open();
+
+                try
+                {
+                    using (SqlDataReader reader = commandApp.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            idApp = (int)reader["id"];
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    InternalServerError();
+                }
+
+            }
+            if (idApp == idContParent)
+            {
+                if (idDataParent == idContID)
+                {
+                    return 1;
+                }
+                return 0;
+            }
+            return 0;
+        }
+
     }
 }
