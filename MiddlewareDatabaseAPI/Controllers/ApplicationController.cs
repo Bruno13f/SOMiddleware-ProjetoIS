@@ -230,7 +230,21 @@ namespace MiddlewareDatabaseAPI.Controllers
         public IHttpActionResult PutApplication(string application, [FromBody] Application value)
         {
 
+            if (value == null)
+            {
+                return BadRequest("The request body is empty.");
 
+            }
+            else if (value.name == null)
+            {
+                return BadRequest("The 'name' parameter is null.");
+            }
+
+            string nameValue;
+            if (!uniqueName(value.name))
+                nameValue = newName(value.name);
+            else
+                nameValue = value.name;
 
             int id = GetAppId(application);
             string queryString = "UPDATE Application SET name=@name WHERE id=@idApp";
@@ -244,7 +258,7 @@ namespace MiddlewareDatabaseAPI.Controllers
 
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Parameters.AddWithValue("@idApp", id);
-                    command.Parameters.AddWithValue("@name", value.name);
+                    command.Parameters.AddWithValue("@name", nameValue);
 
                     try
                     {
