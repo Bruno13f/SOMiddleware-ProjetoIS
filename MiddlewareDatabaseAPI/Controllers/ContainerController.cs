@@ -8,6 +8,10 @@ using System.Data.SqlClient;
 using System.Security.AccessControl;
 using MiddlewareDatabaseAPI.Models;
 using System.Linq.Expressions;
+using Newtonsoft.Json.Linq;
+using System.Collections;
+using System.Drawing.Drawing2D;
+using System.Xml.Linq;
 
 namespace MiddlewareDatabaseAPI.Controllers
 {
@@ -200,43 +204,76 @@ namespace MiddlewareDatabaseAPI.Controllers
         {
             // falta eliminar data e subscriptions se existirem
 
+            //Verificação se a aplicação e o container estão relacionados 
             int[] values = verifyOwnership(application, container);
             if (values[0] != values[1])
                 return NotFound();
 
-            try
+            //No Array de Bool (verificacao) as posicoes correspondem a:
+            //0 --> Data
+            //1 --> Subscription
+
+            bool[] verificacao = verificacaoDataESubscriptionTemDados(container);
+
+
+            bool flagDataEleminadaOuNaoExiste = true;
+            bool flagSubscriptionEleminadaOuNaoExiste = true;
+
+            //Verificar se existe Data no Container. Se exister elemina e enviar para a variavel se a operação correu bem
+            if (verificacao[0])
             {
-                string queryString = "DELETE Container WHERE name=@name";
-
-                using (SqlConnection connection = new SqlConnection(connStr))
-                {
-                    SqlCommand command = new SqlCommand(queryString, connection);
-                    command.Parameters.AddWithValue("@name", container);
-
-                    try
-                    {
-                        command.Connection.Open();
-                        int rows = command.ExecuteNonQuery();
-                        if (rows > 0)
-                        {
-                            return Ok();
-                        }
-                        else
-                        {
-                            return NotFound();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        return InternalServerError();
-                    }
-                }
-
+                flagDataEleminadaOuNaoExiste = deleteDataOrSubscription(container, "Data");
             }
-            catch (Exception)
+
+            //Verificar se existe Subscription no Container. Se exister elemina e enviar para a variavel se a operação correu bem
+            if (verificacao[1])
+            {
+                flagSubscriptionEleminadaOuNaoExiste = deleteDataOrSubscription(container, "Subscription");
+            }
+
+
+            if (flagDataEleminadaOuNaoExiste && flagSubscriptionEleminadaOuNaoExiste)
+            {
+                //Inicio da Eleminação do Container
+                try
+                {
+                    string queryString = "DELETE Container WHERE name=@name";
+
+                    using (SqlConnection connection = new SqlConnection(connStr))
+                    {
+                        SqlCommand command = new SqlCommand(queryString, connection);
+                        command.Parameters.AddWithValue("@name", container);
+
+                        try
+                        {
+                            command.Connection.Open();
+                            int rows = command.ExecuteNonQuery();
+                            if (rows > 0)
+                            {
+                                return Ok();
+                            }
+                            else
+                            {
+                                return NotFound();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            return InternalServerError(ex);
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
+            }
+            else
             {
                 return InternalServerError();
             }
+
         }
 
         public int[] verifyOwnership (string application, string container)
@@ -292,6 +329,102 @@ namespace MiddlewareDatabaseAPI.Controllers
             }
 
             return new int[] { idApp, idContParent, idCont };
+        }
+
+        
+
+        public bool[] verificacaoDataESubscriptionTemDados(string container)
+        {
+            //Estrutura para guardar a informação se o container tem na sua composição Data e Subscription
+            bool[] verificacao = new bool[2];
+            verificacao[0] = false;
+            verificacao[1] = false;
+
+            //Querys Para ir buscar os dados
+            string queryGetDatas = "SELECT id FROM Data WHERE parent=(SELECT id FROM Container WHERE name=@nameContainer)";
+            string queryGetSubscriptios = "SELECT id FROM Subscription WHERE parent=(SELECT id FROM Container WHERE name=@nameContainer)";
+
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                //Pesquisa na Base de dados por Data's
+                SqlCommand commandGetDatas = new SqlCommand(queryGetDatas, connection);
+                commandGetDatas.Parameters.AddWithValue("@nameContainer", container);
+                try
+                {
+                    commandGetDatas.Connection.Open();
+                    using (SqlDataReader reader = commandGetDatas.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            verificacao[0] = true;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    InternalServerError();
+                }
+
+                commandGetDatas.Connection.Close();
+
+                //Pesquisa na Base de dados por Subscription's
+                SqlCommand commandGetSubscriptions = new SqlCommand(queryGetSubscriptios, connection);
+                commandGetSubscriptions.Parameters.AddWithValue("@nameContainer", container);
+                try
+                {
+                    commandGetSubscriptions.Connection.Open();
+                    using (SqlDataReader reader = commandGetSubscriptions.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            verificacao[1] = true;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    InternalServerError();
+                }
+
+                commandGetDatas.Connection.Close();
+
+            }
+
+            return verificacao;
+
+        } 
+
+        
+
+        public bool deleteDataOrSubscription(string container, string whatIs)
+        {
+            string queryDeleteData = "DELETE FROM " + whatIs + " WHERE parent=(SELECT id FROM Container WHERE name=@nameContainer)";
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                SqlCommand commandDelete = new SqlCommand(queryDeleteData, connection);
+                commandDelete.Parameters.AddWithValue("@nameContainer", container);
+
+                try
+                {
+                    commandDelete.Connection.Open();
+                    int rows = commandDelete.ExecuteNonQuery();
+                    if (rows > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    InternalServerError(ex);
+                    return false;
+                }
+            }
         }
 
 
