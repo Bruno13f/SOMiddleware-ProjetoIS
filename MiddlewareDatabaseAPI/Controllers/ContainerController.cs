@@ -161,6 +161,22 @@ namespace MiddlewareDatabaseAPI.Controllers
             if (values[0] != values[1])
                 return BadRequest("Container doesn't belong to app");
 
+            if (value == null)
+                return BadRequest("The request body is empty.");
+
+            if (value.name == null)
+                return BadRequest("The 'name' parameter is null.");
+
+            bool flag = false;
+            string nameValue;
+            if (!UniqueName(value.name))
+            {
+                flag = true;
+                nameValue = NewName(value.name);
+            }
+            else
+                nameValue = value.name;
+
             string queryString = "UPDATE Container SET name=@name WHERE id=@idCont";
 
             try
@@ -169,7 +185,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                 {
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Parameters.AddWithValue("@idCont", values[2]);
-                    command.Parameters.AddWithValue("@name", value.name);
+                    command.Parameters.AddWithValue("@name", nameValue);
 
                     try
                     {
@@ -179,19 +195,19 @@ namespace MiddlewareDatabaseAPI.Controllers
                             return NotFound();
                         }
                         else
-                        {
-                            return Ok("Container " + value.name + " edited");
+                        {                          
+                            return flag ? Ok("Container " + nameValue + " was edited - specified name in use") : Ok("Container " + nameValue + " was edited");
                         }
 
                     }
-                    catch (Exception ex) 
+                    catch (Exception) 
                     {
                         return InternalServerError();
                     }
                 
                 }
 
-            }catch(Exception ex)
+            }catch(Exception)
             {
                 return InternalServerError();
             }
