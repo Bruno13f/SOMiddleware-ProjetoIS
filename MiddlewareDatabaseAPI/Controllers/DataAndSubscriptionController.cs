@@ -98,13 +98,34 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         public int PostData(Data value)
         {
+            if (value == null)
+                return 0;
+
+            if (value.name == null)
+                return 0;
+
+            if (value.content == null)
+                return 0;
+
+            if (value.parent == null)
+                return 0;
+
+            //bool flag = false;
+            string nameValue;
+            if (!UniqueName(value.name))
+            {
+                //flag = true;
+                nameValue = NewName(value.name);
+            }
+            else
+                nameValue = value.name;
 
             string queryString = "INSERT INTO Data (name, content, parent, creation_dt) VALUES (@name, @content, @parent, @creation_dt)";
 
             using (SqlConnection connection = new SqlConnection(connStr))
             {
                 SqlCommand command = new SqlCommand(queryString, connection);
-                command.Parameters.AddWithValue("@name", value.name);
+                command.Parameters.AddWithValue("@name", nameValue);
                 command.Parameters.AddWithValue("@content", value.content);
                 command.Parameters.AddWithValue("@parent", value.parent);
                 DateTime now = DateTime.UtcNow;
@@ -134,13 +155,37 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         public int PostSubscription(Subscription value)
         {
+            if (value == null)
+                return 0;
+
+            if (value.name == null)
+                return 0;
+
+            if (value.event_mqqt == null)
+                return 0;
+
+            if (value.endpoint == null)
+                return 0;
+
+            if (value.parent == null)
+                return 0;
+
+            //bool flag = false;
+            string nameValue;
+            if (!UniqueName(value.name))
+            {
+                //flag = true;
+                nameValue = NewName(value.name);
+            }
+            else
+                nameValue = value.name;
 
             string queryString = "INSERT INTO Subscription (name, event, endpoint, parent, creation_dt) VALUES (@name, @event, @endpoint, @parent, @creation_dt)";
 
             using (SqlConnection connection = new SqlConnection(connStr))
             {
                 SqlCommand command = new SqlCommand(queryString, connection);
-                command.Parameters.AddWithValue("@name", value.name);
+                command.Parameters.AddWithValue("@name", nameValue);
                 command.Parameters.AddWithValue("@event", value.event_mqqt);
                 command.Parameters.AddWithValue("@endpoint", value.endpoint);
                 command.Parameters.AddWithValue("@parent", value.parent);
