@@ -10,6 +10,8 @@ using MiddlewareDatabaseAPI.Models;
 using System.Diagnostics;
 using static System.Net.Mime.MediaTypeNames;
 using Application = MiddlewareDatabaseAPI.Models.Application;
+using System.ComponentModel;
+using Container = MiddlewareDatabaseAPI.Models.Container;
 
 namespace MiddlewareDatabaseAPI.Controllers
 
@@ -17,10 +19,8 @@ namespace MiddlewareDatabaseAPI.Controllers
     [RoutePrefix("api/somiod")]
 
 
-    public class ApplicationController : ApiController
+    public class ApplicationController : SomiodController
     {
-
-        private string connStr = Properties.Settings.Default.ConnStr;
 
         [Route("")]
         [HttpGet]
@@ -78,6 +78,12 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpGet]
         public IHttpActionResult GetApplicationOrContainers(string application)
         {
+            int id_app = GetAppId(application);
+
+            // aplicação nao existe
+            if (id_app == 0)
+                return BadRequest("App doesn't exist");
+
             // Verify header somiod-discover: container
             HttpRequestMessage request = Request;
             if (request.Headers.TryGetValues("somiod-discover", out IEnumerable<string> headerValues))
@@ -87,38 +93,18 @@ namespace MiddlewareDatabaseAPI.Controllers
                 if (string.Equals(somiodDiscoverHeaderValue, "container", StringComparison.OrdinalIgnoreCase))
                 {
                     // Header is present and has the correct value
-                    int id_app = GetAppId(application);
-
-                    if (id_app == 0)
-                        return NotFound();
-                    
-
-                    List<string> listOfContainers= new List<string>();
-                    string queryString = "SELECT * FROM Container WHERE parent = @parentContainer";
+                    List<string> listOfContainers = new List<string>();
 
                     try
                     {
-                        using (SqlConnection connection = new SqlConnection(connStr))
-                        {
-                            SqlCommand command = new SqlCommand(queryString, connection);
-                            command.Parameters.AddWithValue("@parentContainer", id_app);
-                            command.Connection.Open();
-
-                            using (SqlDataReader reader = command.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    string name = (string)reader["name"];
-                                    listOfContainers.Add(name);
-                                }
-                            }
-                        }
-                        return Ok(listOfContainers);
+                        listOfContainers = GetListContainersOfApp(id_app);
                     }
                     catch (Exception)
                     {
                         return InternalServerError();
                     }
+
+                    return Ok(listOfContainers);
                 }
                 else
                 {
@@ -170,22 +156,23 @@ namespace MiddlewareDatabaseAPI.Controllers
             // TODO - criar container automaticamente ?? 
             // creation_dt inserido automaticamente, apenas necessário nome da app
 
-
             if (value == null)
-            {
                 return BadRequest("The request body is empty.");
 
-            }
-            else if (value.name == null)
-            {
+            if (value.name == null)
                 return BadRequest("The 'name' parameter is null.");
-            }
 
+            bool flag = false;
             string nameValue;
-            if (!uniqueName(value.name))
-                nameValue = newName(value.name);
+            if (!UniqueName(value.name))
+            {
+                flag = true;
+                nameValue = NewName(value.name);
+            }
             else
                 nameValue = value.name;
+            
+                
 
             string queryString = "INSERT INTO Application VALUES (@name, @creation_dt)";
 
@@ -210,7 +197,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                         }
                         else
                         {
-                            return Ok();
+                            return flag ? Ok("App " + nameValue + " was created - specified name in use") : Ok("App " + nameValue + " was created");
                         }
 
                     }catch (Exception ex)
@@ -230,25 +217,30 @@ namespace MiddlewareDatabaseAPI.Controllers
         public IHttpActionResult PutApplication(string application, [FromBody] Application value)
         {
 
+            int id = GetAppId(application);
+
+            // aplicação nao existe
+            if (id == 0)
+                return BadRequest("App doesn't exist");
+
             if (value == null)
-            {
                 return BadRequest("The request body is empty.");
 
-            }
-            else if (value.name == null)
-            {
+            if (value.name == null)
                 return BadRequest("The 'name' parameter is null.");
-            }
+           
 
+            bool flag = false;
             string nameValue;
-            if (!uniqueName(value.name))
-                nameValue = newName(value.name);
+            if (!UniqueName(value.name))
+            {
+                flag = true;
+                nameValue = NewName(value.name);
+            } 
             else
                 nameValue = value.name;
 
-            int id = GetAppId(application);
             string queryString = "UPDATE Application SET name=@name WHERE id=@idApp";
-            //String queryApp = "SELECT * FROM Application WHERE name = @nameApplication";
 
             try
             {
@@ -269,7 +261,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                         }
                         else
                         {
-                            return Ok();
+                            return flag ? Ok("App " + nameValue + " was edited - specified name in use") : Ok("App " + nameValue + " was edited");
                         }
 
                     }
@@ -288,9 +280,60 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         [Route("{application}")]
         [HttpDelete]
-        public void DeleteApplication(string application)
+        public IHttpActionResult DeleteApplication(string application)
         {
-            // falta eliminar container, data e subscriptions se existirem
+            int id = GetAppId(application);
+
+            // aplicação nao existe
+            if (id == 0)
+                return BadRequest("App doesn't exist");
+
+            List<string> listOfContainers = new List<string>(); 
+            listOfContainers = GetListContainersOfApp(id);
+
+            foreach (string container in listOfContainers)
+            {
+                ContainerController containerController = new ContainerController();
+                containerController.DeleteContainer(application, container);
+
+            }
+
+
+            string queryString = "DELETE FROM Application where id=@idApp";
+
+            try
+            {
+
+                using (SqlConnection connection = new SqlConnection(connStr))
+                {
+                    SqlCommand command = new SqlCommand(queryString, connection);
+                    command.Parameters.AddWithValue("@idApp", id);
+
+                    try
+                    {
+                        command.Connection.Open();
+                        int rows = command.ExecuteNonQuery();
+
+                        if (rows > 0)
+                        {
+                            return Ok("Application " + application + " deleted");
+                        }
+                        else
+                        {
+                            return NotFound();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return InternalServerError(ex);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         //===================================================PERGUNTAR À STORA===================================================
@@ -299,29 +342,29 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpPost]
         public IHttpActionResult PostContainer(string application, [FromBody] Container value)
         {
-
-            if (value == null)
-            {
-                return BadRequest("The request body is empty.");
-
-            }
-            else if (value.name == null)
-            {
-                return BadRequest("The 'name' parameter is null.");
-            }
-
-            string nameValue;
-            if (!uniqueName(value.name))
-                nameValue = newName(value.name);
-            else
-                nameValue = value.name;
-
             int idApp = GetAppId(application);
-            string queryString = "INSERT INTO Container VALUES (@name, @creation_dt, @parent)";
 
             // aplicação nao existe
             if (idApp == 0)
-                return NotFound();
+                return BadRequest("App doesn't exist");
+
+            if (value == null)
+                return BadRequest("The request body is empty.");
+
+            if (value.name == null)
+                return BadRequest("The 'name' parameter is null.");
+
+            bool flag = false;
+            string nameValue;
+            if (!UniqueName(value.name))
+            {
+                flag = true;
+                nameValue = NewName(value.name);
+            }
+            else
+                nameValue = value.name;
+
+            string queryString = "INSERT INTO Container VALUES (@name, @creation_dt, @parent)";
 
             try
             {
@@ -345,7 +388,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                         }
                         else
                         {
-                            return Ok();
+                            return flag ? Ok("Container " + nameValue + " was created - specified name in use") : Ok("Container " + nameValue + " was created");
                         }
 
                     }
@@ -363,92 +406,37 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         }
 
-        private int GetAppId(string applicationName)
+        private List<string> GetListContainersOfApp (int idApp)
         {
-            int id = 0;
-            string queryApp = "SELECT id FROM Application WHERE name = @nameApplication";
-
-            using (SqlConnection connection = new SqlConnection(connStr))
-            {
-
-                SqlCommand commandApp = new SqlCommand(queryApp, connection);
-                commandApp.Parameters.AddWithValue("@nameApplication", applicationName);
-                commandApp.Connection.Open();
-
-                try
-                {
-                    using (SqlDataReader reader = commandApp.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            id = (int)reader["id"];
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    InternalServerError();
-                }
-
-            }
-
-            return id;
-        }
-
-        private bool uniqueName(string nameValue)
-        {
-            List<string> listOfApplications = new List<string>();
-            string helpQuerryString = "SELECT * FROM Application";
+            List<string> listOfContainers = new List<string>();
+            string queryString = "SELECT * FROM Container WHERE parent = @parentContainer";
 
             try
             {
                 using (SqlConnection connection = new SqlConnection(connStr))
                 {
-                    SqlCommand command = new SqlCommand(helpQuerryString, connection);
+                    SqlCommand command = new SqlCommand(queryString, connection);
+                    command.Parameters.AddWithValue("@parentContainer", idApp);
                     command.Connection.Open();
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            listOfApplications.Add((string)reader["name"]);
+                            string name = (string)reader["name"];
+                            listOfContainers.Add(name);
                         }
                     }
                 }
+                
             }
             catch (Exception)
             {
                 InternalServerError();
             }
 
-            foreach (string name in listOfApplications)
-            {
-                if (name == nameValue)
-                    return false;
-            }
+            return listOfContainers;
 
-            return true;
-        }
-
-        private string newName(string nameValue)
-        {
-            Random random = new Random();
-            const string chars = "abcdefghijklmnopqrstuvwxyz";
-
-            char[] word = new char[4];
-
-            bool flag = true;
-            while (flag)
-            {
-
-                for (int i = 0; i < 4; i++)
-                {
-                    word[i] = chars[random.Next(chars.Length)];
-                }
-
-                flag = !uniqueName(new String(word));
-            }
-            return nameValue + "_" + new String(word);
         }
     }
 }

@@ -13,16 +13,19 @@ using System.ComponentModel;
 namespace MiddlewareDatabaseAPI.Controllers
 {
     [RoutePrefix("api/somiod")]
-    public class DataAndSubscriptionController : ApiController
+    public class DataAndSubscriptionController : SomiodController
     {
-        private string connStr = Properties.Settings.Default.ConnStr;
 
         [Route("{application}/{container}/data/{data}")]
         [HttpGet]
         public IHttpActionResult GetData(string application, string container, string data)
         {
-            if (verifyDataContApp(application, container, data, true))
-                return NotFound();
+            int[] values = VerifyOwnership(application, container);
+            if (values[0] != values[1])
+                return BadRequest("Container doesn't belong to App");
+
+            if (VerifyDataOrSubContainer(container, data, false))
+                return BadRequest("Data doesn't belong to Container");
 
             string queryString = "SELECT * FROM Data WHERE name = @data";
 
@@ -56,8 +59,13 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpGet]
         public IHttpActionResult GetSubscription(string application, string container, string subscription)
         {
-            if (verifyDataContApp(application, container, subscription, false))
-                return NotFound();
+
+            int[] values = VerifyOwnership(application, container);
+            if (values[0] != values[1])
+                return BadRequest("Container doesn't belong to App");
+
+            if (VerifyDataOrSubContainer(container, subscription, false))
+                return BadRequest("Subscription doesn't belong to Container");
 
             string queryString = "SELECT * FROM Subscription WHERE name = @subscription";
 
@@ -92,10 +100,10 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpPost]
         public IHttpActionResult PostData(string application, string container, [FromBody] Data value)
         {
-            ContainerController containerController = new ContainerController();
-            int[] values = containerController.verifyOwnership(application, container);
+
+            int[] values = VerifyOwnership(application, container);
             if (values[0] != values[1])
-                return NotFound();
+                return BadRequest("Container doesn't belong to App");
 
             string queryString = "INSERT INTO Data (name, content, parent, creation_dt) VALUES (@name, @content, @parent, @creation_dt)";
 
@@ -120,7 +128,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                     }
                     else
                     {
-                        return Ok();
+                        return Ok("Data " + value.name + " created");
                     }
                 }
                 catch (Exception ex)
@@ -134,10 +142,10 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpPost]
         public IHttpActionResult PostSubscription(string application, string container, [FromBody] Subscription value)
         {
-            ContainerController containerController = new ContainerController();
-            int[] values = containerController.verifyOwnership(application, container);
+
+            int[] values = VerifyOwnership(application, container);
             if (values[0] != values[1])
-                return NotFound();
+                return BadRequest("Container doesn't belong to App");
 
             string queryString = "INSERT INTO Subscription (name, event, endpoint, parent, creation_dt) VALUES (@name, @event, @endpoint, @parent, @creation_dt)";
 
@@ -163,7 +171,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                     }
                     else
                     {
-                        return Ok();
+                        return Ok("Subscription " + value.name + " created");
                     }
                 }
                 catch (Exception ex)
@@ -177,8 +185,13 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteData(string application, string container, string data)
         {
-            if (verifyDataContApp(application, container, data, true))
-                return NotFound();
+
+            int[] values = VerifyOwnership(application, container);
+            if (values[0] != values[1])
+                return BadRequest("Container doesn't belong to App");
+
+            if (VerifyDataOrSubContainer(container, data, false))
+                return BadRequest("Data doesn't belong to Container");
 
             try
             {
@@ -195,7 +208,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                         int rows = command.ExecuteNonQuery();
                         if (rows > 0)
                         {
-                            return Ok();
+                            return Ok("Data " + data + " deleted");
                         }
                         else
                         {
@@ -218,8 +231,13 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteSubscription(string application, string container, string subscription)
         {
-            if (verifyDataContApp(application, container, subscription, false))
-                return NotFound();
+
+            int[] values = VerifyOwnership(application, container);
+            if (values[0] != values[1])
+                return BadRequest("Container doesn't belong to App");
+
+            if (VerifyDataOrSubContainer(container, subscription, false))
+                return BadRequest("Subscription doesn't belong to Container");
 
             try
             {
@@ -236,7 +254,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                         int rows = command.ExecuteNonQuery();
                         if (rows > 0)
                         {
-                            return Ok();
+                            return Ok("Subscription " + subscription + " deleted");
                         }
                         else
                         {
@@ -255,35 +273,14 @@ namespace MiddlewareDatabaseAPI.Controllers
             }
         }
 
-        private bool verifyDataContApp(string application, string container, string data, bool flag)
+        private bool VerifyDataOrSubContainer(string container, string data, bool flag)
         {
-            int idApp = 0, idCont = 0, idContParent = 0, idDataOrSubParent = 0;
-            string queryAppid = "SELECT id FROM Application WHERE name = @nameApplication";
-            string queryCont = "SELECT id, parent FROM Container WHERE name = @nameContainer";
+            int idCont = 0, idDataOrSubParent = 0;
+            string queryCont = "SELECT id FROM Container WHERE name = @nameContainer";
             string queryDataOrSubparent = flag ? "SELECT parent FROM Data WHERE name = @name" : "SELECT parent FROM Subscription WHERE name = @name";
 
             using (SqlConnection connection = new SqlConnection(connStr))
             {
-                SqlCommand commandApp = new SqlCommand(queryAppid, connection);
-                commandApp.Parameters.AddWithValue("@nameApplication", application);
-                commandApp.Connection.Open();
-
-                try
-                {
-                    using (SqlDataReader reader = commandApp.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            idApp = (int)reader["id"];
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    InternalServerError();
-                }
-
-                commandApp.Connection.Close();
 
                 SqlCommand commandCont = new SqlCommand(queryCont, connection);
                 commandCont.Parameters.AddWithValue("@nameContainer", container);
@@ -295,7 +292,6 @@ namespace MiddlewareDatabaseAPI.Controllers
                     {
                         if (reader.Read())
                         {
-                            idContParent = (int)reader["parent"];
                             idCont = (int)reader["id"];
                         }
                     }
@@ -329,14 +325,9 @@ namespace MiddlewareDatabaseAPI.Controllers
 
             }
 
-            if (idApp == idContParent)
+            if (idDataOrSubParent == idCont)
             {
-                if (idDataOrSubParent == idCont)
-                {
-                    return false;
-                }
-                return true;
-
+                return false;
             }
 
             return true;

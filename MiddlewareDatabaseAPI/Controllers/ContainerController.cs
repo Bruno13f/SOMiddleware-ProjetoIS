@@ -16,18 +16,17 @@ using System.Xml.Linq;
 namespace MiddlewareDatabaseAPI.Controllers
 {
     [RoutePrefix("api/somiod")]
-    public class ContainerController : ApiController
+    public class ContainerController : SomiodController
     {
-        private string connStr = Properties.Settings.Default.ConnStr;
 
         [Route("{application}/{container}")]
         [HttpGet]
         public IHttpActionResult GetContainerOrAllDataOrAllSubscriptions(string application, string container)
         {
 
-            int[] values = verifyOwnership(application, container);
+            int[] values = VerifyOwnership(application, container);
             if (values[0] != values[1])
-                return NotFound();
+                return BadRequest("Container doesn't belong to app");
 
 
             HttpRequestMessage request = Request;
@@ -158,9 +157,9 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpPut]
         public IHttpActionResult PutContainer(string application, string container, [FromBody] Container value)
         {
-            int[] values = verifyOwnership(application, container);
+            int[] values = VerifyOwnership(application, container);
             if (values[0] != values[1])
-                return NotFound();
+                return BadRequest("Container doesn't belong to app");
 
             string queryString = "UPDATE Container SET name=@name WHERE id=@idCont";
 
@@ -181,7 +180,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                         }
                         else
                         {
-                            return Ok();
+                            return Ok("Container " + value.name + " edited");
                         }
 
                     }
@@ -205,15 +204,15 @@ namespace MiddlewareDatabaseAPI.Controllers
             // falta eliminar data e subscriptions se existirem
 
             //Verificação se a aplicação e o container estão relacionados 
-            int[] values = verifyOwnership(application, container);
+            int[] values = VerifyOwnership(application, container);
             if (values[0] != values[1])
-                return NotFound();
+                return BadRequest("Container doesn't belong to app");
 
             //No Array de Bool (verificacao) as posicoes correspondem a:
             //0 --> Data
             //1 --> Subscription
 
-            bool[] verificacao = verificacaoDataESubscriptionTemDados(container);
+            /*bool[] verificacao = VerificacaoDataESubscriptionTemDados(container);
 
 
             bool flagDataEleminadaOuNaoExiste = true;
@@ -222,25 +221,25 @@ namespace MiddlewareDatabaseAPI.Controllers
             //Verificar se existe Data no Container. Se exister elemina e enviar para a variavel se a operação correu bem
             if (verificacao[0])
             {
-                flagDataEleminadaOuNaoExiste = deleteDataOrSubscription(container, "Data");
+                flagDataEleminadaOuNaoExiste = 
             }
 
             //Verificar se existe Subscription no Container. Se exister elemina e enviar para a variavel se a operação correu bem
             if (verificacao[1])
             {
-                flagSubscriptionEleminadaOuNaoExiste = deleteDataOrSubscription(container, "Subscription");
-            }
+                flagSubscriptionEleminadaOuNaoExiste = 
+            }*/
 
+            DeleteDataOrSubscription(container, "Data");
+            DeleteDataOrSubscription(container, "Subscription");
 
-            if (flagDataEleminadaOuNaoExiste && flagSubscriptionEleminadaOuNaoExiste)
+            try
             {
-                //Inicio da Eleminação do Container
-                try
-                {
-                    string queryString = "DELETE Container WHERE name=@name";
+                
 
-                    using (SqlConnection connection = new SqlConnection(connStr))
-                    {
+                using (SqlConnection connection = new SqlConnection(connStr))
+                {
+                        string queryString = "DELETE FROM Container WHERE name=@name";
                         SqlCommand command = new SqlCommand(queryString, connection);
                         command.Parameters.AddWithValue("@name", container);
 
@@ -248,92 +247,32 @@ namespace MiddlewareDatabaseAPI.Controllers
                         {
                             command.Connection.Open();
                             int rows = command.ExecuteNonQuery();
+
                             if (rows > 0)
                             {
-                                return Ok();
+                                return Ok("Container " + container + " deleted");
                             }
                             else
                             {
-                                return NotFound();
+                               return NotFound();
                             }
                         }
                         catch (Exception ex)
                         {
                             return InternalServerError(ex);
                         }
-                    }
+                }
 
-                }
-                catch (Exception ex)
-                {
-                    return InternalServerError(ex);
-                }
             }
-            else
+            catch (Exception ex)
             {
-                return InternalServerError();
+                return InternalServerError(ex);
             }
+            
 
         }
 
-        public int[] verifyOwnership (string application, string container)
-        {
-            int idApp = 0, idContParent = 0, idCont = 0;
-            string queryApp = "SELECT id FROM Application WHERE name = @nameApplication";
-            string queryCont = "SELECT id, parent FROM Container WHERE name = @nameContainer";
-
-            using (SqlConnection connection = new SqlConnection(connStr)) { 
-
-                SqlCommand commandCont = new SqlCommand(queryCont, connection);
-                commandCont.Parameters.AddWithValue("@nameContainer", container);
-                commandCont.Connection.Open();
-
-                try
-                {
-                    using (SqlDataReader reader = commandCont.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            idContParent = (int)reader["parent"];
-                            idCont = (int)reader["id"];
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    InternalServerError();
-                }
-
-
-                commandCont.Connection.Close();
-
-                SqlCommand commandApp = new SqlCommand(queryApp, connection);
-                commandApp.Parameters.AddWithValue("@nameApplication", application);
-                commandApp.Connection.Open();
-
-                try
-                {
-                    using (SqlDataReader reader = commandApp.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            idApp = (int)reader["id"];
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    InternalServerError();
-                }
-
-            }
-
-            return new int[] { idApp, idContParent, idCont };
-        }
-
-        
-
-        public bool[] verificacaoDataESubscriptionTemDados(string container)
+        /*public bool[] VerificacaoDataESubscriptionTemDados(string container)
         {
             //Estrutura para guardar a informação se o container tem na sua composição Data e Subscription
             bool[] verificacao = new bool[2];
@@ -393,13 +332,11 @@ namespace MiddlewareDatabaseAPI.Controllers
 
             return verificacao;
 
-        } 
+        } */
 
-        
-
-        public bool deleteDataOrSubscription(string container, string whatIs)
+        public void DeleteDataOrSubscription(string container, string table)
         {
-            string queryDeleteData = "DELETE FROM " + whatIs + " WHERE parent=(SELECT id FROM Container WHERE name=@nameContainer)";
+            string queryDeleteData = "DELETE FROM " + table + " WHERE parent=(SELECT id FROM Container WHERE name=@nameContainer)";
 
             using (SqlConnection connection = new SqlConnection(connStr))
             {
@@ -409,20 +346,11 @@ namespace MiddlewareDatabaseAPI.Controllers
                 try
                 {
                     commandDelete.Connection.Open();
-                    int rows = commandDelete.ExecuteNonQuery();
-                    if (rows > 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    commandDelete.ExecuteNonQuery();
                 }
                 catch (Exception ex)
                 {
                     InternalServerError(ex);
-                    return false;
                 }
             }
         }
