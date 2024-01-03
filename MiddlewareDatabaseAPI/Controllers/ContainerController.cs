@@ -358,24 +358,62 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         //===================================================PERGUNTAR À STORA===================================================
 
-        /*[Route("{application}/{container}")]
+        [Route("{application}/{container}")]
         [HttpPost]
-        public IHttpActionResult PostDataOrSubscription([FromBody] RequestDataOrSubscription value)
+        public IHttpActionResult PostDataOrSubscription(string application, string container, [FromBody] RequestDataOrSubscription value)
         {
+
+            int[] values = VerifyOwnership(application, container);
+            if (values[0] != values[1])
+                return BadRequest("Container doesn't belong to App");
+
+            value.parent = values[2];
+
+            if (value == null)
+                return BadRequest("The request body is empty.");
+
+            if (value.res_type == null)
+                return BadRequest("The 'res_type' parameter is null. Must be either 'data' or 'subscription'");
+
             // Assuming DataAndSubscriptionController has a parameterless constructor
             DataAndSubscriptionController controller = new DataAndSubscriptionController();
+            int result;
+            bool flag = true;
 
             if (value.res_type == "data")
             {
-                return controller.PostData(new Data { name = value.name, content = value.content, parent = value.parent });
-            }
+                if (value.content == null)
+                    return BadRequest("Error - Trying to create Data with empty content");
 
-            if (value.res_type == "subscription")
+                result = controller.PostData(new Data { name = value.name, content = value.content, parent = value.parent });
+                flag = false;
+
+            }else if (value.res_type == "subscription")
             {
-                return controller.PostSubscription((Subscription)value);
+                if (value.event_mqtt == null)
+                    return BadRequest("Error - Trying to create Subscription with empty event");
+
+                if (value.endpoint == null)
+                    return BadRequest("Error - Trying to create Subscription with empty endpoint");
+
+                result = controller.PostSubscription(new Subscription { name = value.name, event_mqqt = value.event_mqtt, endpoint = value.endpoint, parent = value.parent });
+            }
+            else
+            {
+                return BadRequest("Invalid res_type");
             }
 
-            return BadRequest("Invalid res_type");
+            switch (result)
+            {
+                case -1:
+                    return InternalServerError();
+                    break;
+                case 0:
+                    return NotFound();
+                    break;
+                default:
+                    return flag ? Ok("Subscription " + value.name + " created") : Ok("Data " + value.name + " created");
+            }
         }
 
         public class RequestDataOrSubscription
@@ -386,6 +424,6 @@ namespace MiddlewareDatabaseAPI.Controllers
             public string content { get; set; }
             public string event_mqtt { get; set; }
             public string endpoint { get; set; }
-        }*/
+        }
     }
 }

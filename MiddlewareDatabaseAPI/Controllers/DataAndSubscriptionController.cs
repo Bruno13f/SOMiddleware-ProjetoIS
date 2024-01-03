@@ -96,14 +96,8 @@ namespace MiddlewareDatabaseAPI.Controllers
             return NotFound();
         }
 
-        [Route("{application}/{container}/data")]
-        [HttpPost]
-        public IHttpActionResult PostData(string application, string container, [FromBody] Data value)
+        public int PostData(Data value)
         {
-
-            int[] values = VerifyOwnership(application, container);
-            if (values[0] != values[1])
-                return BadRequest("Container doesn't belong to App");
 
             string queryString = "INSERT INTO Data (name, content, parent, creation_dt) VALUES (@name, @content, @parent, @creation_dt)";
 
@@ -124,28 +118,22 @@ namespace MiddlewareDatabaseAPI.Controllers
                     int result = command.ExecuteNonQuery();
                     if (result == 0)
                     {
-                        return NotFound();
+                        return 0;
                     }
                     else
                     {
-                        return Ok("Data " + value.name + " created");
+                        return 1;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    return InternalServerError(ex);
+                    return -1;
                 }
             }
         }
 
-        [Route("{application}/{container}/subscription")]
-        [HttpPost]
-        public IHttpActionResult PostSubscription(string application, string container, [FromBody] Subscription value)
+        public int PostSubscription(Subscription value)
         {
-
-            int[] values = VerifyOwnership(application, container);
-            if (values[0] != values[1])
-                return BadRequest("Container doesn't belong to App");
 
             string queryString = "INSERT INTO Subscription (name, event, endpoint, parent, creation_dt) VALUES (@name, @event, @endpoint, @parent, @creation_dt)";
 
@@ -167,16 +155,16 @@ namespace MiddlewareDatabaseAPI.Controllers
                     int result = command.ExecuteNonQuery();
                     if (result == 0)
                     {
-                        return NotFound();
+                        return 0;
                     }
                     else
                     {
-                        return Ok("Subscription " + value.name + " created");
+                        return 1;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    return InternalServerError(ex);
+                    return -1;
                 }
             }
         }
