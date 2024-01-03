@@ -372,6 +372,9 @@ namespace MiddlewareDatabaseAPI.Controllers
             if (value == null)
                 return BadRequest("The request body is empty.");
 
+            if (value.name == null)
+                return BadRequest("The 'name' parameter is empty.");
+
             if (value.res_type == null)
                 return BadRequest("The 'res_type' parameter is null. Must be either 'data' or 'subscription'");
 
@@ -393,8 +396,13 @@ namespace MiddlewareDatabaseAPI.Controllers
                 if (value.event_mqtt == null)
                     return BadRequest("Error - Trying to create Subscription with empty event");
 
+                if (value.event_mqtt != "1" || value.event_mqtt != "2")
+                    return BadRequest("Error - Trying to create Subscription with wrong value for event (1,2)");
+
                 if (value.endpoint == null)
                     return BadRequest("Error - Trying to create Subscription with empty endpoint");
+
+                //return Ok(new Subscription { name = value.name, event_mqqt = value.event_mqtt, endpoint = value.endpoint, parent = value.parent });
 
                 result = controller.PostSubscription(new Subscription { name = value.name, event_mqqt = value.event_mqtt, endpoint = value.endpoint, parent = value.parent });
             }
