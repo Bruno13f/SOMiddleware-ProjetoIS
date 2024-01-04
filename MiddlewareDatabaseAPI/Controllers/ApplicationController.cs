@@ -135,6 +135,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                                         name = (string)reader["name"],
                                         creation_dt = (DateTime)reader["creation_dt"]
                                     };
+
                                     return Ok(app);
                                 }
                             }

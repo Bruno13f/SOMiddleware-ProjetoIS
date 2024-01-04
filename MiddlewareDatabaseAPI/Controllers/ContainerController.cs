@@ -431,10 +431,8 @@ namespace MiddlewareDatabaseAPI.Controllers
             {
                 case -1:
                     return InternalServerError();
-                    break;
                 case 0:
                     return NotFound();
-                    break;
                 default:
                     return flag ? Ok("Subscription " + value.name + " created") : Ok("Data " + value.name + " created");
             }
