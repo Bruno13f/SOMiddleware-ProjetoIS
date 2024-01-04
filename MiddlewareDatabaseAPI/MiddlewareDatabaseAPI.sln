@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiddlewareDatabaseAPI", "Mi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication", "..\TestApplication\TestApplication.csproj", "{A9DEFAA8-F47D-4D1D-ABBC-BFC5620D2F70}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestContainer", "..\TestContainer\TestContainer.csproj", "{0BF46154-0880-4F73-987D-499936CB9792}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{A9DEFAA8-F47D-4D1D-ABBC-BFC5620D2F70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9DEFAA8-F47D-4D1D-ABBC-BFC5620D2F70}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9DEFAA8-F47D-4D1D-ABBC-BFC5620D2F70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BF46154-0880-4F73-987D-499936CB9792}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BF46154-0880-4F73-987D-499936CB9792}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BF46154-0880-4F73-987D-499936CB9792}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BF46154-0880-4F73-987D-499936CB9792}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

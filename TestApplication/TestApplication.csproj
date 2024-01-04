@@ -112,11 +112,5 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MiddlewareDatabaseAPI\MiddlewareDatabaseAPI.csproj">
-      <Project>{4a02840c-7eb7-4bcd-aa99-9775658bab97}</Project>
-      <Name>MiddlewareDatabaseAPI</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

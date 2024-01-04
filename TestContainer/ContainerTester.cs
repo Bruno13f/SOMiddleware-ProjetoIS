@@ -14,72 +14,89 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Security.AccessControl;
 
-namespace TestApplication
+namespace TestContainer
 {
-    public partial class AppTester : Form
+    public partial class ContainerTester : Form
     {
         string baseURI = @"http://localhost:50591";
         RestClient client = null;
-        public AppTester()
+        public ContainerTester()
         {
             InitializeComponent();
             client = new RestClient(baseURI);
         }
 
-        private void btnGetApps_Click(object sender, EventArgs e)
+        private void btnGetAllContainers_Click(object sender, EventArgs e)
         {
-            getAllApps();
+            getAllContainers(textBoxNameApp.Text);
         }
 
-        private void getAllApps()
+        private void getAllContainers(string name)
         {
-            var request = new RestRequest("/api/somiod", Method.Get);
+            textBoxNameApp.Text = name;
+
+            if (name == "")
+            {
+                MessageBox.Show("No Application specified");
+                return;
+            }
+
+            var request = new RestRequest("/api/somiod/{application}", Method.Get);
+            request.AddUrlSegment("application", name);
             request.RequestFormat = DataFormat.Xml;
-            request.AddHeader("somiod-discover", "application");
+            request.AddHeader("somiod-discover", "container");
             request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
 
             if (response.IsSuccessful)
             {
-                richTextBoxApps.Clear();
+                richTextBoxContainers.Clear();
 
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(response.Content);
 
                 if (xmlDoc.DocumentElement.ChildNodes.Count == 0)
                 {
-                    richTextBoxApps.AppendText("No Applications");
+                    richTextBoxContainers.AppendText("No Containers");
                     return;
                 }
 
                 foreach (XmlNode node in xmlDoc.DocumentElement.ChildNodes)
                 {
-                    richTextBoxApps.AppendText(node.InnerText + Environment.NewLine);
+                    richTextBoxContainers.AppendText(node.InnerText + Environment.NewLine);
                 }
 
             }
             else
             {
-                MessageBox.Show("Error getting all applications name");
+                MessageBox.Show("Error getting all containers name");
             }
         }
 
-        private void btnGetApp_Click(object sender, EventArgs e)
+        private void btnGetContainer_Click(object sender, EventArgs e)
         {
-            if (textBoxNameApp.Text == "")
+
+            if (textBoxNameApp2.Text == "")
             {
-                MessageBox.Show("No application specified");
+                MessageBox.Show("No Application specified");
                 return;
             }
 
-            var request = new RestRequest("/api/somiod/{application}", Method.Get);
-            request.AddUrlSegment("application", textBoxNameApp.Text);
+            if (textBoxNameContainer.Text == "")
+            {
+                MessageBox.Show("No Container specified");
+                return;
+            }
+
+            var request = new RestRequest("/api/somiod/{application}/{container}", Method.Get);
+            request.AddUrlSegment("application", textBoxNameApp2.Text);
+            request.AddUrlSegment("container", textBoxNameContainer.Text);
             request.RequestFormat = DataFormat.Xml;
             request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
-            int id;
+            int id, parent;
 
             if (response.IsSuccessful)
             {
@@ -91,7 +108,7 @@ namespace TestApplication
                     switch (node.Name)
                     {
                         case "creation_dt":
-                            textBoxCDT.Text = node.InnerText;
+                            textBoxDTC.Text = node.InnerText;
                             break;
                         case "id":
                             int.TryParse(node.InnerText, out id);
@@ -100,23 +117,26 @@ namespace TestApplication
                         case "name":
                             textBoxName.Text = node.InnerText;
                             break;
+                        case "parent":
+                            int.TryParse(node.InnerText, out parent);
+                            textBoxParent.Text = parent.ToString();
+                            break;
                     }
                 }
             }
             else
             {
-                MessageBox.Show("Error getting " + textBoxNameApp.Text + " information");
+                MessageBox.Show("Error getting " + textBoxNameContainer.Text + " information");
             }
         }
 
-        private void btnEditApp_Click(object sender, EventArgs e)
+        private void btnCreate_Click(object sender, EventArgs e)
         {
-            if (textBoxNameApp.Text == "" && textBoxID.Text == "" && textBoxCDT.Text == "")
+            if (textBoxNameApp2.Text == "")
             {
-                MessageBox.Show("No application loaded");
+                MessageBox.Show("No Application specified");
                 return;
             }
-
 
             if (textBoxName.Text == "")
             {
@@ -124,54 +144,32 @@ namespace TestApplication
                 return;
             }
 
-            var request = new RestRequest("/api/somiod/{application}", Method.Put);
-            request.AddUrlSegment("application", textBoxNameApp.Text);
+            var request = new RestRequest("/api/somiod/{application}", Method.Post);
+            request.AddUrlSegment("application", textBoxNameApp2.Text);
             request.AddParameter("application/xml", createXmlDocument(textBoxName.Text).OuterXml, ParameterType.RequestBody);
 
             var response = client.Execute(request);
 
             if (response.IsSuccessful)
             {
-                textBoxNameApp.Clear();
-                getAllApps();
-                MessageBox.Show(response.Content.ToString());
-            }
-            else
-            {
-                MessageBox.Show("Error editing " + textBoxNameApp.Text + " application");
-            }
-
-        }
-
-        private void btnCreateApp_Click(object sender, EventArgs e)
-        {
-
-            if (textBoxName.Text == "")
-            {
-                MessageBox.Show("No name specified");
-                return;
-            }
-
-            var request = new RestRequest("/api/somiod", Method.Post);
-            request.AddParameter("application/xml", createXmlDocument(textBoxName.Text).OuterXml, ParameterType.RequestBody);
-
-            var response = client.Execute(request);
-
-            if (response.IsSuccessful)
-            {
-                getAllApps();
+                getAllContainers(textBoxNameApp2.Text);
                 MessageBox.Show(response.Content.ToString());
                 textBoxID.Clear();
-                textBoxCDT.Clear();
+                textBoxDTC.Clear();
             }
             else
             {
-                MessageBox.Show("Error creating " + textBoxNameApp.Text + " application");
+                MessageBox.Show("Error creating " + textBoxNameContainer.Text + " container");
             }
         }
 
-        private void btnDeleteApp_Click(object sender, EventArgs e)
-        { 
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            if (textBoxNameApp2.Text == "" && textBoxNameContainer.Text == "" && textBoxID.Text == "" && textBoxDTC.Text == "" && textBoxParent.Text == "")
+            {
+                MessageBox.Show("No container loaded");
+                return;
+            }
 
             if (textBoxName.Text == "")
             {
@@ -179,42 +177,77 @@ namespace TestApplication
                 return;
             }
 
-            var request = new RestRequest("/api/somiod/{application}", Method.Delete);
-            request.AddUrlSegment("application", textBoxName.Text);
+            var request = new RestRequest("/api/somiod/{application}/{container}", Method.Put);
+            request.AddUrlSegment("application", textBoxNameApp2.Text);
+            request.AddUrlSegment("container", textBoxNameContainer.Text);
             request.AddParameter("application/xml", createXmlDocument(textBoxName.Text).OuterXml, ParameterType.RequestBody);
 
             var response = client.Execute(request);
 
             if (response.IsSuccessful)
             {
-                ClearTextBoxes();
-                textBoxNameApp.Clear();
-                getAllApps();
+                getAllContainers(textBoxNameApp2.Text);
                 MessageBox.Show(response.Content.ToString());
+                textBoxNameContainer.Clear();
             }
             else
             {
-                MessageBox.Show("Error deleting " + textBoxNameApp.Text + " application");
+                MessageBox.Show("Error editing " + textBoxNameContainer.Text + " container");
+            }
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+
+            if (textBoxNameApp2.Text == "")
+            {
+                MessageBox.Show("No Application specified");
+                return;
+            }
+
+            if (textBoxName.Text == "")
+            {
+                MessageBox.Show("No name specified");
+                return;
+            }
+
+            var request = new RestRequest("/api/somiod/{application}/{container}", Method.Delete);
+            request.AddUrlSegment("application", textBoxNameApp2.Text);
+            request.AddUrlSegment("container", textBoxName.Text);
+            request.AddParameter("application/xml", createXmlDocument(textBoxName.Text).OuterXml, ParameterType.RequestBody);
+
+            var response = client.Execute(request);
+
+            if (response.IsSuccessful)
+            {
+                getAllContainers(textBoxNameApp2.Text);
+                MessageBox.Show(response.Content.ToString());
+                clearTxtBoxes();
+            }
+            else
+            {
+                MessageBox.Show("Error editing " + textBoxNameContainer.Text + " container");
             }
         }
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            ClearTextBoxes();
+            clearTxtBoxes();
         }
 
-        private void ClearTextBoxes()
+        private void clearTxtBoxes()
         {
             textBoxID.Clear();
+            textBoxDTC.Clear();
             textBoxName.Clear();
-            textBoxCDT.Clear();
+            textBoxParent.Clear();
         }
 
-        private XmlDocument createXmlDocument (string name)
+        private XmlDocument createXmlDocument(string name)
         {
             XmlDocument xmlDoc = new XmlDocument();
 
-            XmlElement rootElement = xmlDoc.CreateElement("Application");
+            XmlElement rootElement = xmlDoc.CreateElement("Container");
             rootElement.SetAttribute("xmlns:i", "http://www.w3.org/2001/XMLSchema-instance");
             rootElement.SetAttribute("xmlns", "http://schemas.datacontract.org/2004/07/MiddlewareDatabaseAPI.Models");
             xmlDoc.AppendChild(rootElement);
@@ -225,5 +258,6 @@ namespace TestApplication
             return xmlDoc;
         }
 
+       
     }
 }
