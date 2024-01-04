@@ -180,6 +180,12 @@ namespace TestData
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
+            if(textBoxID.Text == "" && textBoxDTC.Text == "" && textBoxParent.Text == "")
+            {
+                MessageBox.Show("No data loaded");
+                return;
+            }
+
             if (textBoxNameApp2.Text == "")
             {
                 MessageBox.Show("No app specified");
@@ -192,7 +198,7 @@ namespace TestData
                 return;
             }
 
-            if (textBoxName.Text == "")
+            if (textBoxNameData2.Text == "")
             {
                 MessageBox.Show("No Data name specified");
                 return;
@@ -201,7 +207,7 @@ namespace TestData
             var request = new RestRequest("/api/somiod/{application}/{container}/data/{data}", Method.Delete);
             request.AddUrlSegment("application", textBoxNameApp2.Text);
             request.AddUrlSegment("container", textBoxNameContainer2.Text);
-            request.AddUrlSegment("data", textBoxName.Text);
+            request.AddUrlSegment("data", textBoxNameData2.Text);
             
             var response = client.Execute(request);
 
@@ -209,8 +215,7 @@ namespace TestData
             {
                 getAllDatas(textBoxNameApp2.Text, textBoxNameContainer2.Text);
                 MessageBox.Show(response.Content.ToString());
-                textBoxID.Clear();
-                textBoxDTC.Clear();
+                clearTxtBoxes();
             }
             else
             {
