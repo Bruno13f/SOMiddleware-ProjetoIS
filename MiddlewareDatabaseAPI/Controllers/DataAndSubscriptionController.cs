@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.Security.AccessControl;
 using static System.Net.Mime.MediaTypeNames;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace MiddlewareDatabaseAPI.Controllers
 {
@@ -24,7 +25,7 @@ namespace MiddlewareDatabaseAPI.Controllers
             if (values[0] != values[1])
                 return BadRequest("Container doesn't belong to App");
 
-            if (VerifyDataOrSubContainer(container, data, false))
+            if (VerifyDataOrSubContainer(container, data, true))
                 return BadRequest("Data doesn't belong to Container");
 
             string queryString = "SELECT * FROM Data WHERE name = @data";
@@ -107,9 +108,6 @@ namespace MiddlewareDatabaseAPI.Controllers
             if (value.content == null)
                 return 0;
 
-            if (value.parent == null)
-                return 0;
-
             //bool flag = false;
             string nameValue;
             if (!UniqueName(value.name, "Data"))
@@ -167,9 +165,6 @@ namespace MiddlewareDatabaseAPI.Controllers
             if (value.endpoint == null)
                 return 0;
 
-            if (value.parent == null)
-                return 0;
-
             //bool flag = false;
             string nameValue;
             if (!UniqueName(value.name, "Subscription"))
@@ -214,7 +209,7 @@ namespace MiddlewareDatabaseAPI.Controllers
             }
         }
 
-        [Route("{application}/{container}/teste/{data}")]
+        [Route("{application}/{container}/data/{data}")]
         [HttpDelete]
         public IHttpActionResult DeleteData(string application, string container, string data)
         {
@@ -223,7 +218,7 @@ namespace MiddlewareDatabaseAPI.Controllers
             if (values[0] != values[1])
                 return BadRequest("Container doesn't belong to App");
 
-            if (VerifyDataOrSubContainer(container, data, false))
+            if (VerifyDataOrSubContainer(container, data, true))
                 return BadRequest("Data doesn't belong to Container");
 
             try

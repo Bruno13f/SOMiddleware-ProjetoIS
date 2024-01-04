@@ -160,7 +160,7 @@ namespace MiddlewareDatabaseAPI.Controllers
             if (value == null)
                 return BadRequest("The request body is empty.");
 
-            if (value.name == null)
+            if (value.name == null || value.name == "")
                 return BadRequest("The 'name' parameter is null.");
 
             bool flag = false;
@@ -227,7 +227,7 @@ namespace MiddlewareDatabaseAPI.Controllers
             if (value == null)
                 return BadRequest("The request body is empty.");
 
-            if (value.name == null)
+            if (value.name == null || value.name == "")
                 return BadRequest("The 'name' parameter is null.");
            
 
@@ -352,7 +352,7 @@ namespace MiddlewareDatabaseAPI.Controllers
             if (value == null)
                 return BadRequest("The request body is empty.");
 
-            if (value.name == null)
+            if (value.name == null || value.name == "")
                 return BadRequest("The 'name' parameter is null.");
 
             bool flag = false;

@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
+using System.Web.Management;
 
 namespace MiddlewareDatabaseAPI.Controllers
 {
@@ -164,7 +165,7 @@ namespace MiddlewareDatabaseAPI.Controllers
             if (value == null)
                 return BadRequest("The request body is empty.");
 
-            if (value.name == null)
+            if (value.name == null || value.name == "")
                 return BadRequest("The 'name' parameter is null.");
 
             bool flag = false;
@@ -217,34 +218,10 @@ namespace MiddlewareDatabaseAPI.Controllers
         [HttpDelete]
         public IHttpActionResult DeleteContainer(string application, string container)
         {
-            // falta eliminar data e subscriptions se existirem
 
-            //Verificação se a aplicação e o container estão relacionados 
             int[] values = VerifyOwnership(application, container);
             if (values[0] != values[1])
                 return BadRequest("Container doesn't belong to app");
-
-            //No Array de Bool (verificacao) as posicoes correspondem a:
-            //0 --> Data
-            //1 --> Subscription
-
-            /*bool[] verificacao = VerificacaoDataESubscriptionTemDados(container);
-
-
-            bool flagDataEleminadaOuNaoExiste = true;
-            bool flagSubscriptionEleminadaOuNaoExiste = true;
-
-            //Verificar se existe Data no Container. Se exister elemina e enviar para a variavel se a operação correu bem
-            if (verificacao[0])
-            {
-                flagDataEleminadaOuNaoExiste = 
-            }
-
-            //Verificar se existe Subscription no Container. Se exister elemina e enviar para a variavel se a operação correu bem
-            if (verificacao[1])
-            {
-                flagSubscriptionEleminadaOuNaoExiste = 
-            }*/
 
             DeleteDataOrSubscription(container, "Data");
             DeleteDataOrSubscription(container, "Subscription");
@@ -288,68 +265,6 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         }
 
-        /*public bool[] VerificacaoDataESubscriptionTemDados(string container)
-        {
-            //Estrutura para guardar a informação se o container tem na sua composição Data e Subscription
-            bool[] verificacao = new bool[2];
-            verificacao[0] = false;
-            verificacao[1] = false;
-
-            //Querys Para ir buscar os dados
-            string queryGetDatas = "SELECT id FROM Data WHERE parent=(SELECT id FROM Container WHERE name=@nameContainer)";
-            string queryGetSubscriptios = "SELECT id FROM Subscription WHERE parent=(SELECT id FROM Container WHERE name=@nameContainer)";
-
-
-            using (SqlConnection connection = new SqlConnection(connStr))
-            {
-                //Pesquisa na Base de dados por Data's
-                SqlCommand commandGetDatas = new SqlCommand(queryGetDatas, connection);
-                commandGetDatas.Parameters.AddWithValue("@nameContainer", container);
-                try
-                {
-                    commandGetDatas.Connection.Open();
-                    using (SqlDataReader reader = commandGetDatas.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            verificacao[0] = true;
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    InternalServerError();
-                }
-
-                commandGetDatas.Connection.Close();
-
-                //Pesquisa na Base de dados por Subscription's
-                SqlCommand commandGetSubscriptions = new SqlCommand(queryGetSubscriptios, connection);
-                commandGetSubscriptions.Parameters.AddWithValue("@nameContainer", container);
-                try
-                {
-                    commandGetSubscriptions.Connection.Open();
-                    using (SqlDataReader reader = commandGetSubscriptions.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            verificacao[1] = true;
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    InternalServerError();
-                }
-
-                commandGetDatas.Connection.Close();
-
-            }
-
-            return verificacao;
-
-        } */
-
         public void DeleteDataOrSubscription(string container, string table)
         {
             string queryDeleteData = "DELETE FROM " + table + " WHERE parent=(SELECT id FROM Container WHERE name=@nameContainer)";
@@ -376,23 +291,22 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         [Route("{application}/{container}")]
         [HttpPost]
-        public IHttpActionResult PostDataOrSubscription(string application, string container, [FromBody] RequestDataOrSubscription value)
+        public IHttpActionResult PostDataOrSubscription(string application, string container, [FromBody] DataOrSubscription value)
         {
+            if (value == null)
+                return BadRequest("The request body is empty.");
+
+            if (value.name == "" || value.name == null)
+                return BadRequest("The 'name' parameter is empty.");
+
+            if (value.res_type == "" || value.res_type == null)
+                return BadRequest("The 'res_type' parameter is null. Must be either 'data' or 'subscription'");
 
             int[] values = VerifyOwnership(application, container);
             if (values[0] != values[1])
                 return BadRequest("Container doesn't belong to App");
 
             value.parent = values[2];
-
-            if (value == null)
-                return BadRequest("The request body is empty.");
-
-            if (value.name == null)
-                return BadRequest("The 'name' parameter is empty.");
-
-            if (value.res_type == null)
-                return BadRequest("The 'res_type' parameter is null. Must be either 'data' or 'subscription'");
 
             // Assuming DataAndSubscriptionController has a parameterless constructor
             DataAndSubscriptionController controller = new DataAndSubscriptionController();
@@ -401,7 +315,7 @@ namespace MiddlewareDatabaseAPI.Controllers
 
             if (value.res_type == "data")
             {
-                if (value.content == null)
+                if (value.content == null || value.content == "")
                     return BadRequest("Error - Trying to create Data with empty content");
 
                 result = controller.PostData(new Data { name = value.name, content = value.content, parent = value.parent });
@@ -409,13 +323,11 @@ namespace MiddlewareDatabaseAPI.Controllers
 
             }else if (value.res_type == "subscription")
             {
-                if (value.event_mqtt == null)
-                    return BadRequest("Error - Trying to create Subscription with empty event");
 
                 if (value.event_mqtt != "1" || value.event_mqtt != "2")
                     return BadRequest("Error - Trying to create Subscription with wrong value for event (1,2)");
 
-                if (value.endpoint == null)
+                if (value.endpoint == null || value.endpoint == "")
                     return BadRequest("Error - Trying to create Subscription with empty endpoint");
 
                 //return Ok(new Subscription { name = value.name, event_mqqt = value.event_mqtt, endpoint = value.endpoint, parent = value.parent });
@@ -438,14 +350,5 @@ namespace MiddlewareDatabaseAPI.Controllers
             }
         }
 
-        public class RequestDataOrSubscription
-        {
-            public string res_type { get; set; }
-            public string name {  get; set; }
-            public int parent { get; set; }
-            public string content { get; set; }
-            public string event_mqtt { get; set; }
-            public string endpoint { get; set; }
-        }
     }
 }
