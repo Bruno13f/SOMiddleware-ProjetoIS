@@ -286,9 +286,6 @@ namespace MiddlewareDatabaseAPI.Controllers
             }
         }
 
-
-        //===================================================PERGUNTAR À STORA===================================================
-
         [Route("{application}/{container}")]
         [HttpPost]
         public IHttpActionResult PostDataOrSubscription(string application, string container, [FromBody] DataOrSubscription value)
@@ -308,9 +305,8 @@ namespace MiddlewareDatabaseAPI.Controllers
 
             value.parent = values[2];
 
-            // Assuming DataAndSubscriptionController has a parameterless constructor
             DataAndSubscriptionController controller = new DataAndSubscriptionController();
-            int result;
+            string[] result;
             bool flag = true;
 
             if (value.res_type == "data")
@@ -330,8 +326,6 @@ namespace MiddlewareDatabaseAPI.Controllers
                 if (value.endpoint == null || value.endpoint == "")
                     return BadRequest("Error - Trying to create Subscription with empty endpoint");
 
-                //return Ok(new Subscription { name = value.name, event_mqqt = value.event_mqtt, endpoint = value.endpoint, parent = value.parent });
-
                 result = controller.PostSubscription(new Subscription { name = value.name, event_mqqt = value.event_mqtt, endpoint = value.endpoint, parent = value.parent });
             }
             else
@@ -339,14 +333,14 @@ namespace MiddlewareDatabaseAPI.Controllers
                 return BadRequest("Invalid res_type");
             }
 
-            switch (result)
+            switch (result[0])
             {
-                case -1:
+                case "-1":
                     return InternalServerError();
-                case 0:
+                case "0":
                     return NotFound();
                 default:
-                    return flag ? Ok("Subscription " + value.name + " created") : Ok("Data " + value.name + " created");
+                    return flag ? Ok("Subscription " + result[1] + " created") : Ok("Data " + result[1] + " created");
             }
         }
 

@@ -10,6 +10,7 @@ using System.Security.AccessControl;
 using static System.Net.Mime.MediaTypeNames;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Http.Results;
 
 namespace MiddlewareDatabaseAPI.Controllers
 {
@@ -97,16 +98,16 @@ namespace MiddlewareDatabaseAPI.Controllers
             return NotFound();
         }
 
-        public int PostData(Data value)
+        public string[] PostData(Data value)
         {
             if (value == null)
-                return 0;
+                return new string[] {"0", ""};
 
             if (value.name == null)
-                return 0;
+                return new string[] { "0", "" };
 
             if (value.content == null)
-                return 0;
+                return new string[] { "0", "" };
 
             //bool flag = false;
             string nameValue;
@@ -137,39 +138,37 @@ namespace MiddlewareDatabaseAPI.Controllers
                     int result = command.ExecuteNonQuery();
                     if (result == 0)
                     {
-                        return 0;
+                        return new string[] { "0", "" };
                     }
                     else
                     {
-                        return 1;
+                        return new string[] { "1", nameValue };
                     }
                 }
                 catch (Exception)
                 {
-                    return -1;
+                    return new string[] { "-1", "" };
                 }
             }
         }
 
-        public int PostSubscription(Subscription value)
+        public string[] PostSubscription(Subscription value)
         {
             if (value == null)
-                return 0;
+                return new string[] { "0", "" };
 
             if (value.name == null)
-                return 0;
+                return new string[] { "0", "" };
 
             if (value.event_mqqt == null)
-                return 0;
+                return new string[] { "0", "" };
 
             if (value.endpoint == null)
-                return 0;
+                return new string[] { "0", "" };
 
-            //bool flag = false;
             string nameValue;
             if (!UniqueName(value.name, "Subscription"))
             {
-                //flag = true;
                 nameValue = NewName(value.name, "Subscription");
             }
             else
@@ -195,16 +194,16 @@ namespace MiddlewareDatabaseAPI.Controllers
                     int result = command.ExecuteNonQuery();
                     if (result == 0)
                     {
-                        return 0;
+                        return new string[] { "0", "" };
                     }
                     else
                     {
-                        return 1;
+                        return new string[] { "1", nameValue };
                     }
                 }
                 catch (Exception)
                 {
-                    return -1;
+                    return new string[] { "-1", "" };
                 }
             }
         }
