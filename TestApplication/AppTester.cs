@@ -126,7 +126,7 @@ namespace TestApplication
 
             var request = new RestRequest("/api/somiod/{application}", Method.Put);
             request.AddUrlSegment("application", textBoxNameApp.Text);
-            request.AddParameter("application/xml", createXmlDocument(textBoxName.Text).OuterXml, ParameterType.RequestBody);
+            request.AddHeader("Content-type", "application/xml");
 
             var response = client.Execute(request);
 
@@ -146,9 +146,9 @@ namespace TestApplication
         private void btnCreateApp_Click(object sender, EventArgs e)
         {
 
-            if (textBoxName.Text == "")
+            if (textBoxNameApp.Text == "" && textBoxID.Text == "" && textBoxCDT.Text == "")
             {
-                MessageBox.Show("No name specified");
+                MessageBox.Show("No application loaded");
                 return;
             }
 

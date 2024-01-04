@@ -63,13 +63,11 @@ namespace MiddlewareDatabaseAPI.Controllers
                 }
                 else
                 {
-                    // Header is present but has an incorrect value
                     return BadRequest("Invalid value for somiod-discover header");
                 }
             }
             else
             {
-                // Header is not present
                 return BadRequest("somiod-discover header is missing");
             }
         }

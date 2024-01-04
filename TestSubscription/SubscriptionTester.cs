@@ -23,7 +23,7 @@ namespace TestSubscription
             client = new RestClient(baseURI);
         }
 
-        private void btnGetAllContainers_Click(object sender, EventArgs e)
+        private void btnGetAllSubscriptions_Click(object sender, EventArgs e)
         {
             getAllSubscriptions(textBoxNameApp.Text, textBoxContainer.Text);
         }
@@ -80,13 +80,13 @@ namespace TestSubscription
 
         private void btnGetContainer_Click(object sender, EventArgs e)
         {
-            if (textBoxNameApp2.Text == null)
+            if (textBoxNameApp2.Text == "")
             {
                 MessageBox.Show("Application not specified");
                 return;
             }
 
-            if (textBoxNameContainer.Text == null)
+            if (textBoxNameContainer.Text == "")
             {
                 MessageBox.Show("Container not specified");
                 return;
@@ -125,10 +125,14 @@ namespace TestSubscription
                             int.TryParse(node.InnerText, out parent);
                             textBoxParent.Text = parent.ToString();
                             break;
-                        case "event":
-
+                        case "event_mqqt":
+                            if (node.InnerText == "1")
+                                textBoxEvent.Text = "Creation";
+                            if (node.InnerText == "2")
+                                textBoxEvent.Text = "Deletion";
                             break;
                         case "endpoint":
+                            textBoxEndpoint.Text = node.InnerText;
                             break;
                     }
                 }
@@ -138,6 +142,142 @@ namespace TestSubscription
                 MessageBox.Show("Error getting subcription " + textBoxNameSubscription.Text + " info");
             }
 
+        }
+
+        private void btnCreate_Click(object sender, EventArgs e)
+        {
+            if (textBoxNameApp2.Text == "")
+            {
+                MessageBox.Show("Application not specified");
+                return;
+            }
+
+            if (textBoxNameContainer.Text == "")
+            {
+                MessageBox.Show("Container not specified");
+                return;
+            }
+
+            if (textBoxName.Text == "")
+            {
+                MessageBox.Show("Name not specified");
+                return;
+            }
+
+            if (textBoxEndpoint.Text == "")
+            {
+                MessageBox.Show("Endpoint not specified");
+                return;
+            }
+
+            if (textBoxEvent.Text != "Creation" && textBoxEvent.Text != "Disposal")
+            {
+                MessageBox.Show("Event is wrong - must be 'Creation' or 'Disposal'");
+                return;
+            }
+
+            var request = new RestRequest("/api/somiod/{application}/{container}", Method.Post);
+            request.AddUrlSegment("application", textBoxNameApp2.Text);
+            request.AddUrlSegment("container", textBoxNameContainer.Text);
+            String xml = createXmlDocument(textBoxName.Text, textBoxEndpoint.Text, textBoxEvent.Text).OuterXml;
+            request.AddParameter("application/xml", xml, ParameterType.RequestBody);
+
+            var response = client.Execute(request);
+
+            if (response.IsSuccessful)
+            {
+                getAllSubscriptions(textBoxNameApp2.Text, textBoxNameContainer.Text);
+                MessageBox.Show(response.Content.ToString());
+                clearTxtBoxes();
+            }
+            else
+            {
+                MessageBox.Show("Error creating subcription " + textBoxName.Text);
+            }
+
+
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (textBoxNameApp2.Text == "" && textBoxNameContainer.Text == "" && textBoxNameSubscription.Text == "" && textBoxID.Text == "" &&
+                textBoxDTC.Text == "" && textBoxParent.Text == "" && textBoxEvent.Text == "" && textBoxEndpoint.Text == "")
+            {
+                MessageBox.Show("No subscription loaded");
+                return;
+            }
+
+            if (textBoxName.Text == "")
+            {
+                MessageBox.Show("No name specified");
+                return;
+            }
+
+            var request = new RestRequest("/api/somiod/{application}/{container}/subscription/{subscription}", Method.Delete);
+            request.AddUrlSegment("application", textBoxNameApp2.Text);
+            request.AddUrlSegment("container", textBoxNameContainer.Text);
+            request.AddUrlSegment("subscription", textBoxNameSubscription.Text);
+            request.AddHeader("Content-type", "application/xml");
+
+            var response = client.Execute(request);
+
+            if (response.IsSuccessful)
+            {
+                getAllSubscriptions(textBoxNameApp2.Text, textBoxContainer.Text);
+                MessageBox.Show(response.Content.ToString());
+                clearTxtBoxes();
+            }
+            else
+            {
+                MessageBox.Show("Error deliting " + textBoxNameSubscription.Text + " subscription");
+            }
+
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            clearTxtBoxes();
+        }
+
+        private void clearTxtBoxes() {
+            textBoxID.Clear();
+            textBoxDTC.Clear();
+            textBoxName.Clear();
+            textBoxParent.Clear();
+            textBoxEvent.Clear();
+            textBoxEndpoint.Clear();
+            textBoxNameApp2.Clear();
+            textBoxNameContainer.Clear();
+            textBoxNameSubscription.Clear();
+        }
+
+        private XmlDocument createXmlDocument(string name, string endpoint, string event_mqtt)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+
+            XmlElement rootElement = xmlDoc.CreateElement("DataOrSubscription");
+            rootElement.SetAttribute("xmlns:i", "http://www.w3.org/2001/XMLSchema-instance");
+            rootElement.SetAttribute("xmlns", "http://schemas.datacontract.org/2004/07/MiddlewareDatabaseAPI.Models");
+            xmlDoc.AppendChild(rootElement);
+            XmlElement endpointElement = xmlDoc.CreateElement("endpoint");
+            endpointElement.InnerText = endpoint;
+            rootElement.AppendChild(endpointElement);
+            XmlElement eventElement = xmlDoc.CreateElement("event_mqtt");
+            if (event_mqtt == "Creation")
+                eventElement.InnerText = "1";
+            else
+                eventElement.InnerText = "2";
+            rootElement.AppendChild(eventElement);
+            XmlElement nameElement = xmlDoc.CreateElement("name");
+            nameElement.InnerText = name;
+            rootElement.AppendChild(nameElement);
+            XmlElement resTypeElement = xmlDoc.CreateElement("res_type");
+            resTypeElement.InnerText = "subscription";
+            rootElement.AppendChild(resTypeElement);
+
+            Console.WriteLine(xmlDoc.OuterXml);
+
+            return xmlDoc;
         }
     }
 }

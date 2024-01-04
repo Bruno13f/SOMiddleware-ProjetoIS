@@ -32,7 +32,6 @@
             this.richTextBoxContainers = new System.Windows.Forms.RichTextBox();
             this.groupBoxContainer = new System.Windows.Forms.GroupBox();
             this.btnClear = new System.Windows.Forms.Button();
-            this.btnEdit = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnCreate = new System.Windows.Forms.Button();
             this.textBoxParent = new System.Windows.Forms.TextBox();
@@ -50,6 +49,7 @@
             this.labelAppName2 = new System.Windows.Forms.Label();
             this.labelNameContainer = new System.Windows.Forms.Label();
             this.labelNameApp = new System.Windows.Forms.Label();
+            this.btnEdit = new System.Windows.Forms.Button();
             this.groupBoxContainer.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,8 +73,8 @@
             // 
             // groupBoxContainer
             // 
-            this.groupBoxContainer.Controls.Add(this.btnClear);
             this.groupBoxContainer.Controls.Add(this.btnEdit);
+            this.groupBoxContainer.Controls.Add(this.btnClear);
             this.groupBoxContainer.Controls.Add(this.btnDelete);
             this.groupBoxContainer.Controls.Add(this.btnCreate);
             this.groupBoxContainer.Controls.Add(this.textBoxParent);
@@ -94,23 +94,13 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(634, 69);
+            this.btnClear.Location = new System.Drawing.Point(636, 72);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(75, 23);
             this.btnClear.TabIndex = 14;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
-            // 
-            // btnEdit
-            // 
-            this.btnEdit.Location = new System.Drawing.Point(634, 28);
-            this.btnEdit.Name = "btnEdit";
-            this.btnEdit.Size = new System.Drawing.Size(75, 23);
-            this.btnEdit.TabIndex = 13;
-            this.btnEdit.Text = "Edit";
-            this.btnEdit.UseVisualStyleBackColor = true;
-            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
             // 
             // btnDelete
             // 
@@ -257,6 +247,15 @@
             this.labelNameApp.TabIndex = 17;
             this.labelNameApp.Text = "Application Name ";
             // 
+            // btnEdit
+            // 
+            this.btnEdit.Location = new System.Drawing.Point(636, 28);
+            this.btnEdit.Name = "btnEdit";
+            this.btnEdit.Size = new System.Drawing.Size(75, 23);
+            this.btnEdit.TabIndex = 15;
+            this.btnEdit.Text = "Edit";
+            this.btnEdit.UseVisualStyleBackColor = true;
+            // 
             // ContainerTester
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -297,7 +296,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBoxDTC;
         private System.Windows.Forms.Button btnClear;
-        private System.Windows.Forms.Button btnEdit;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnCreate;
         private System.Windows.Forms.TextBox textBoxNameApp;
@@ -305,6 +303,7 @@
         private System.Windows.Forms.Label labelAppName2;
         private System.Windows.Forms.Label labelNameContainer;
         private System.Windows.Forms.Label labelNameApp;
+        private System.Windows.Forms.Button btnEdit;
     }
 }
 

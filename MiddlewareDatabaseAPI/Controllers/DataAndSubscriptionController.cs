@@ -100,20 +100,11 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         public string[] PostData(Data value)
         {
-            if (value == null)
-                return new string[] {"0", ""};
 
-            if (value.name == null)
-                return new string[] { "0", "" };
-
-            if (value.content == null)
-                return new string[] { "0", "" };
-
-            //bool flag = false;
             string nameValue;
             if (!UniqueName(value.name, "Data"))
             {
-                //flag = true;
+                
                 nameValue = NewName(value.name, "Data");
             }
             else
@@ -154,17 +145,6 @@ namespace MiddlewareDatabaseAPI.Controllers
 
         public string[] PostSubscription(Subscription value)
         {
-            if (value == null)
-                return new string[] { "0", "" };
-
-            if (value.name == null)
-                return new string[] { "0", "" };
-
-            if (value.event_mqqt == null)
-                return new string[] { "0", "" };
-
-            if (value.endpoint == null)
-                return new string[] { "0", "" };
 
             string nameValue;
             if (!UniqueName(value.name, "Subscription"))
@@ -185,7 +165,6 @@ namespace MiddlewareDatabaseAPI.Controllers
                 command.Parameters.AddWithValue("@parent", value.parent);
                 DateTime now = DateTime.UtcNow;
                 string isoDateTimeString = now.ToString("yyyy-MM-dd HH:mm:ss");
-
                 command.Parameters.AddWithValue("@creation_dt", isoDateTimeString);
 
                 try

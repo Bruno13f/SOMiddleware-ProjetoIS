@@ -304,7 +304,6 @@ namespace MiddlewareDatabaseAPI.Controllers
                 return BadRequest("Container doesn't belong to App");
 
             value.parent = values[2];
-
             DataAndSubscriptionController controller = new DataAndSubscriptionController();
             string[] result;
             bool flag = true;
@@ -326,7 +325,9 @@ namespace MiddlewareDatabaseAPI.Controllers
                 if (value.endpoint == null || value.endpoint == "")
                     return BadRequest("Error - Trying to create Subscription with empty endpoint");
 
-                result = controller.PostSubscription(new Subscription { name = value.name, event_mqqt = value.event_mqtt, endpoint = value.endpoint, parent = value.parent });
+                Subscription sub = new Subscription { name = value.name, event_mqqt = value.event_mqtt, endpoint = value.endpoint, parent = value.parent };
+
+                result = controller.PostSubscription(sub);
             }
             else
             {

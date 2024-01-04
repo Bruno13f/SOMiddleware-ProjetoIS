@@ -199,9 +199,9 @@ namespace TestContainer
         private void btnDelete_Click(object sender, EventArgs e)
         {
 
-            if (textBoxNameApp2.Text == "")
+            if (textBoxNameApp2.Text == "" && textBoxNameContainer.Text == "" && textBoxID.Text == "" && textBoxDTC.Text == "" && textBoxParent.Text == "")
             {
-                MessageBox.Show("No Application specified");
+                MessageBox.Show("No container loaded");
                 return;
             }
 
@@ -214,7 +214,7 @@ namespace TestContainer
             var request = new RestRequest("/api/somiod/{application}/{container}", Method.Delete);
             request.AddUrlSegment("application", textBoxNameApp2.Text);
             request.AddUrlSegment("container", textBoxName.Text);
-            request.AddParameter("application/xml", createXmlDocument(textBoxName.Text).OuterXml, ParameterType.RequestBody);
+            request.AddHeader("Content-type", "application/xml");
 
             var response = client.Execute(request);
 
