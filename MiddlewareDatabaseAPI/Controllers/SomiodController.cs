@@ -42,10 +42,10 @@ namespace MiddlewareDatabaseAPI.Controllers
             return id;
         }
 
-        protected bool UniqueName(string nameValue)
+        protected bool UniqueName(string nameValue, string table)
         {
             List<string> listOfApplications = new List<string>();
-            string helpQuerryString = "SELECT * FROM Application";
+            string helpQuerryString = "SELECT * FROM " + table;
 
             try
             {
@@ -77,7 +77,7 @@ namespace MiddlewareDatabaseAPI.Controllers
             return true;
         }
 
-        protected string NewName(string nameValue)
+        protected string NewName(string nameValue, string table)
         {
             Random random = new Random();
             const string chars = "abcdefghijklmnopqrstuvwxyz";
@@ -93,7 +93,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                     word[i] = chars[random.Next(chars.Length)];
                 }
 
-                flag = !UniqueName(new String(word));
+                flag = !UniqueName(new String(word), table);
             }
             return nameValue + "_" + new String(word);
         }

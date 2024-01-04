@@ -169,10 +169,10 @@ namespace MiddlewareDatabaseAPI.Controllers
 
             bool flag = false;
             string nameValue;
-            if (!UniqueName(value.name))
+            if (!UniqueName(value.name, "Container"))
             {
                 flag = true;
-                nameValue = NewName(value.name);
+                nameValue = NewName(value.name, "Container");
             }
             else
                 nameValue = value.name;

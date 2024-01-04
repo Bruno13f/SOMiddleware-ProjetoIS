@@ -112,10 +112,10 @@ namespace MiddlewareDatabaseAPI.Controllers
 
             //bool flag = false;
             string nameValue;
-            if (!UniqueName(value.name))
+            if (!UniqueName(value.name, "Data"))
             {
                 //flag = true;
-                nameValue = NewName(value.name);
+                nameValue = NewName(value.name, "Data");
             }
             else
                 nameValue = value.name;
@@ -172,10 +172,10 @@ namespace MiddlewareDatabaseAPI.Controllers
 
             //bool flag = false;
             string nameValue;
-            if (!UniqueName(value.name))
+            if (!UniqueName(value.name, "Subscription"))
             {
                 //flag = true;
-                nameValue = NewName(value.name);
+                nameValue = NewName(value.name, "Subscription");
             }
             else
                 nameValue = value.name;
@@ -248,7 +248,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                             return NotFound();
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         return InternalServerError();
                     }
@@ -294,7 +294,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                             return NotFound();
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         return InternalServerError();
                     }
