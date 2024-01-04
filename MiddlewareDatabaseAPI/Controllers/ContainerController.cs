@@ -434,7 +434,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                 case 0:
                     return NotFound();
                 default:
-                    return flag ? Ok("Subscription " + value.name + " created") : Ok("Data " + value.name + " created");
+                    return flag ? Ok("Subscription " + value.name + " created" + Environment.NewLine + value) : Ok("Data " + value.name + " created");
             }
         }
 
