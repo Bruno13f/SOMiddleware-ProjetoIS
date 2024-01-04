@@ -300,6 +300,8 @@ namespace MiddlewareDatabaseAPI.Controllers
                 return BadRequest("The 'res_type' parameter is null. Must be either 'data' or 'subscription'");
 
             int[] values = VerifyOwnership(application, container);
+            if (values[0] == 0)
+                return BadRequest("Application doesn't exist");
             if (values[0] != values[1])
                 return BadRequest("Container doesn't belong to App");
 

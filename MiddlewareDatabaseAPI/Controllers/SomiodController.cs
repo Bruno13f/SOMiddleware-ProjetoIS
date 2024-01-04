@@ -106,6 +106,30 @@ namespace MiddlewareDatabaseAPI.Controllers
 
             using (SqlConnection connection = new SqlConnection(connStr))
             {
+                SqlCommand commandApp = new SqlCommand(queryApp, connection);
+                commandApp.Parameters.AddWithValue("@nameApplication", application);
+                commandApp.Connection.Open();
+
+                try
+                {
+                    using (SqlDataReader reader = commandApp.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            idApp = (int)reader["id"];
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    InternalServerError();
+                }
+                commandApp.Connection.Close();
+
+                if (idApp == 0)
+                {
+                    return new int[] { 0, 0, 0 };
+                }
 
                 SqlCommand commandCont = new SqlCommand(queryCont, connection);
                 commandCont.Parameters.AddWithValue("@nameContainer", container);
@@ -126,28 +150,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                 {
                     InternalServerError();
                 }
-
-
                 commandCont.Connection.Close();
-
-                SqlCommand commandApp = new SqlCommand(queryApp, connection);
-                commandApp.Parameters.AddWithValue("@nameApplication", application);
-                commandApp.Connection.Open();
-
-                try
-                {
-                    using (SqlDataReader reader = commandApp.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            idApp = (int)reader["id"];
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    InternalServerError();
-                }
 
             }
 
