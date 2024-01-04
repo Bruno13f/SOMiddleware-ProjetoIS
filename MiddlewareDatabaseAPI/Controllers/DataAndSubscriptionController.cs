@@ -23,6 +23,8 @@ namespace MiddlewareDatabaseAPI.Controllers
         public IHttpActionResult GetData(string application, string container, string data)
         {
             int[] values = VerifyOwnership(application, container);
+            if (values[0] == 0)
+                return BadRequest("Application doesn't exist");
             if (values[0] != values[1])
                 return BadRequest("Container doesn't belong to App");
 
@@ -63,6 +65,8 @@ namespace MiddlewareDatabaseAPI.Controllers
         {
 
             int[] values = VerifyOwnership(application, container);
+            if (values[0] == 0)
+                return BadRequest("Application doesn't exist");
             if (values[0] != values[1])
                 return BadRequest("Container doesn't belong to App");
 
@@ -193,6 +197,8 @@ namespace MiddlewareDatabaseAPI.Controllers
         {
 
             int[] values = VerifyOwnership(application, container);
+            if (values[0] == 0)
+                return BadRequest("Application doesn't exist");
             if (values[0] != values[1])
                 return BadRequest("Container doesn't belong to App");
 
@@ -239,6 +245,8 @@ namespace MiddlewareDatabaseAPI.Controllers
         {
 
             int[] values = VerifyOwnership(application, container);
+            if (values[0] == 0)
+                return BadRequest("Application doesn't exist");
             if (values[0] != values[1])
                 return BadRequest("Container doesn't belong to App");
 

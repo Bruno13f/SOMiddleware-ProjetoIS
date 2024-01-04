@@ -26,8 +26,10 @@ namespace MiddlewareDatabaseAPI.Controllers
         {
 
             int[] values = VerifyOwnership(application, container);
+            if (values[0] == 0)
+                return BadRequest("Application doesn't exist");
             if (values[0] != values[1])
-                return BadRequest("Container doesn't belong to app");
+                return BadRequest("Container doesn't belong to App");
 
 
             HttpRequestMessage request = Request;
@@ -159,8 +161,10 @@ namespace MiddlewareDatabaseAPI.Controllers
         public IHttpActionResult PutContainer(string application, string container, [FromBody] Container value)
         {
             int[] values = VerifyOwnership(application, container);
+            if (values[0] == 0)
+                return BadRequest("Application doesn't exist");
             if (values[0] != values[1])
-                return BadRequest("Container doesn't belong to app");
+                return BadRequest("Container doesn't belong to App");
 
             if (value == null)
                 return BadRequest("The request body is empty.");
@@ -220,8 +224,10 @@ namespace MiddlewareDatabaseAPI.Controllers
         {
 
             int[] values = VerifyOwnership(application, container);
+            if (values[0] == 0)
+                return BadRequest("Application doesn't exist");
             if (values[0] != values[1])
-                return BadRequest("Container doesn't belong to app");
+                return BadRequest("Container doesn't belong to App");
 
             DeleteDataOrSubscription(container, "Data");
             DeleteDataOrSubscription(container, "Subscription");
