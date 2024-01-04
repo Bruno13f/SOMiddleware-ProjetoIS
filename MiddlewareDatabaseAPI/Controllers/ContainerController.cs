@@ -320,7 +320,7 @@ namespace MiddlewareDatabaseAPI.Controllers
             }else if (value.res_type == "subscription")
             {
 
-                if (value.event_mqtt != "1" || value.event_mqtt != "2")
+                if (value.event_mqtt != "1" && value.event_mqtt != "2")
                     return BadRequest("Error - Trying to create Subscription with wrong value for event (1,2)");
 
                 if (value.endpoint == null || value.endpoint == "")
