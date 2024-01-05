@@ -22,6 +22,7 @@ namespace ClientApp
     {
         string baseURI = @"http://localhost:50591";
         string app = "LibraryApp";
+        string appAdmin = "LibraryAdmin";
         RestClient client = null;
         public ClientApp()
         {
@@ -62,7 +63,7 @@ namespace ClientApp
         private void getAllOffices()
         {
             var request = new RestRequest("/api/somiod/{application}", Method.Get);
-            request.AddUrlSegment("application", app);
+            request.AddUrlSegment("application", appAdmin);
             request.RequestFormat = DataFormat.Xml;
             request.AddHeader("somiod-discover", "container");
             request.AddHeader("Accept", "application/xml");
@@ -72,6 +73,7 @@ namespace ClientApp
             if (response.IsSuccessful)
             {
                 richTextBoxOffices.Clear();
+                comboBoxOffices.Items.Clear();
 
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(response.Content);
@@ -112,7 +114,7 @@ namespace ClientApp
             }
 
             var request = new RestRequest("/api/somiod/{application}/{container}", Method.Post);
-            request.AddUrlSegment("application", app);
+            request.AddUrlSegment("application", appAdmin);
             request.AddUrlSegment("container", comboBoxOffices.SelectedItem.ToString());
             request.AddParameter("application/xml", createXmlDocumentData(textBoxName.Text).OuterXml, ParameterType.RequestBody);
 
@@ -154,7 +156,7 @@ namespace ClientApp
             xmlDoc.AppendChild(rootElement);
 
             XmlElement contElement = xmlDoc.CreateElement("content");
-            contElement.InnerText = "";
+            contElement.InnerText = "Reserved";
             rootElement.AppendChild(contElement);
 
             XmlElement nameElement = xmlDoc.CreateElement("name");

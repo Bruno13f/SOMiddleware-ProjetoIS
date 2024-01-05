@@ -15,18 +15,29 @@ namespace AdminApp
     public partial class AdminApp : Form
     {
         string baseURI = @"http://localhost:50591";
+        string app = "LibraryAdmin";
         RestClient client = null;
         public AdminApp()
         {
             InitializeComponent();
             client = new RestClient(baseURI);
             createLibrary();
+            getAllOffices();
+            this.FormClosing += ClientApp_FormClosing;
+        }
+
+        private void ClientApp_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            var request = new RestRequest("/api/somiod/{application}", Method.Delete);
+            request.AddUrlSegment("application", app);
+
+            client.Execute(request);
         }
 
         private void createLibrary()
         {
             var request = new RestRequest("/api/somiod", Method.Post);
-            request.AddParameter("application/xml", createXmlDocument("LibraryAdmin").OuterXml, ParameterType.RequestBody);
+            request.AddParameter("application/xml", createXmlDocument("LibraryAdmin", true).OuterXml, ParameterType.RequestBody);
 
             var response = client.Execute(request);
 
@@ -42,7 +53,8 @@ namespace AdminApp
 
         private void getAllOffices()
         {
-            var mainRequest = new RestRequest("/api/somiod/LibraryAdmin", Method.Get);
+            var mainRequest = new RestRequest("/api/somiod/{application}", Method.Get);
+            mainRequest.AddUrlSegment("application", app);
             mainRequest.RequestFormat = DataFormat.Xml;
             mainRequest.AddHeader("somiod-discover", "container");
             mainRequest.AddHeader("Accept", "application/xml");
@@ -54,19 +66,21 @@ namespace AdminApp
                 XmlDocument mainXmlDoc = new XmlDocument();
                 mainXmlDoc.LoadXml(mainResponse.Content);
 
+                richTextBoxOpenOffices.Clear();
+                richTextBoxOccupiedOffices.Clear();
+
                 if (mainXmlDoc.DocumentElement.ChildNodes.Count == 0)
                 {
-                    richTextBoxOpenOffices.AppendText("No Containers");
-                    richTextBoxOccupiedOffices.AppendText("No Containers");
+                    richTextBoxOpenOffices.AppendText("No Open Offices");
+                    richTextBoxOccupiedOffices.AppendText("No Occupied Offices");
                     return;
                 }
 
                 foreach (XmlNode containerNode in mainXmlDoc.DocumentElement.ChildNodes)
                 {
-                    var contname = containerNode.InnerText;
-
-                    var containerRequest = new RestRequest("/api/somiod/LibraryAdmin/{container}", Method.Get);
-                    containerRequest.AddUrlSegment("container", contname);
+                    var containerRequest = new RestRequest("/api/somiod/{application}/{container}", Method.Get);
+                    containerRequest.AddUrlSegment("application", app);
+                    containerRequest.AddUrlSegment("container", containerNode.InnerText);
                     containerRequest.RequestFormat = DataFormat.Xml;
                     containerRequest.AddHeader("somiod-discover", "data");
                     containerRequest.AddHeader("Accept", "application/xml");
@@ -80,22 +94,22 @@ namespace AdminApp
 
                         if (containerXmlDoc.DocumentElement.ChildNodes.Count == 0)
                         {
-                            richTextBoxOpenOffices.AppendText(contname + Environment.NewLine);
+                            richTextBoxOpenOffices.AppendText(containerNode.InnerText + Environment.NewLine);
                         }
                         else
                         {
-                            richTextBoxOccupiedOffices.AppendText(contname + Environment.NewLine);
+                            richTextBoxOccupiedOffices.AppendText(containerNode.InnerText + Environment.NewLine);
                         }
                     }
                     else
                     {
-                        MessageBox.Show($"Error getting data for container {contname}");
+                        MessageBox.Show($"Error getting data for container {containerNode.InnerText}");
                     }
                 }
             }
             else
             {
-                MessageBox.Show("Error getting open offices");
+                MessageBox.Show("Error getting Offices");
             }
         }
 
@@ -109,19 +123,20 @@ namespace AdminApp
             }
 
             var request = new RestRequest("/api/somiod/{application}", Method.Post);
-            request.AddParameter("application/xml", createXmlDocument(textBoxCreateNameOffice.Text).OuterXml, ParameterType.RequestBody);
+            request.AddUrlSegment("application", app);
+            request.AddParameter("application/xml", createXmlDocument(textBoxCreateNameOffice.Text, false).OuterXml, ParameterType.RequestBody);
 
             var response = client.Execute(request);
 
             if (response.IsSuccessful)
             {
                 getAllOffices();
-                MessageBox.Show(response.Content.ToString());
+                MessageBox.Show("Created Office " + textBoxCreateNameOffice.Text);
                 textBoxCreateNameOffice.Clear();
             }
             else
             {
-                MessageBox.Show("Error creating " + textBoxCreateNameOffice.Text + " container");
+                MessageBox.Show("Error creating " + textBoxCreateNameOffice.Text + " office");
             }
 
         }
@@ -136,11 +151,11 @@ namespace AdminApp
 
         }
 
-        private XmlDocument createXmlDocument(string name)
+        private XmlDocument createXmlDocument(string name, bool flag)
         {
             XmlDocument xmlDoc = new XmlDocument();
 
-            XmlElement rootElement = xmlDoc.CreateElement("Application");
+            XmlElement rootElement = flag ? xmlDoc.CreateElement("Application") : xmlDoc.CreateElement("Container");
             rootElement.SetAttribute("xmlns:i", "http://www.w3.org/2001/XMLSchema-instance");
             rootElement.SetAttribute("xmlns", "http://schemas.datacontract.org/2004/07/MiddlewareDatabaseAPI.Models");
             xmlDoc.AppendChild(rootElement);
