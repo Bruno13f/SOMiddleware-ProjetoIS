@@ -248,7 +248,7 @@ namespace TestSubscription
             textBoxEndpoint.Clear();
             textBoxNameApp2.Clear();
             textBoxNameContainer.Clear();
-            textBoxNameSubscription.Clear();
+            textBoxNameSubscription.Clear(); 
         }
 
         private XmlDocument createXmlDocument(string name, string endpoint, string event_mqtt)

@@ -17,6 +17,7 @@ namespace AdminApp
     public partial class AdminApp : Form
     {
         MqttClient mClient = new MqttClient("127.0.0.1");
+        string topic = { "updateOffices" };
         List<string> topicArray = new List<string>();
         string baseURI = @"http://localhost:50591";
         string app = "LibraryAdmin";
@@ -28,6 +29,12 @@ namespace AdminApp
             createLibrary();
             getAllOffices();
             this.FormClosing += ClientApp_FormClosing;
+            mClient.Connect(Guid.NewGuid().ToString());
+            if (!mClient.IsConnected)
+            {
+                Console.WriteLine("Failed to connect to mqtt");
+
+            }
         }
 
         private void ClientApp_FormClosing(object sender, FormClosingEventArgs e)
@@ -42,6 +49,7 @@ namespace AdminApp
                     string[] topicUnsubscribe = { topic };
                     mClient.Unsubscribe(topicUnsubscribe);
                 }
+                mClient.Unsubscribe(topic);
                 mClient.Disconnect();
             }
                 
@@ -158,7 +166,8 @@ namespace AdminApp
             if (response.IsSuccessful)
             {
 
-                // create subscription
+                byte[] msg = Encoding.UTF8.GetBytes("Office Created");
+                mClient.Publish(topic, msg);
 
                 var requestSubCreation = new RestRequest("/api/somiod/{application}/{container}", Method.Post);
                 requestSubCreation.AddUrlSegment("application", app);
@@ -192,7 +201,6 @@ namespace AdminApp
                 {
                     Console.WriteLine("Sub Deletion Created - " + textBoxCreateNameOffice.Text);
                     flagDeletion = true;
-                    // subscription
                 }
                 else
                 {
@@ -203,7 +211,6 @@ namespace AdminApp
                 {
                     string[] topic = { "api/somiod/" + app + "/" + textBoxCreateNameOffice.Text };
 
-                    mClient.Connect(Guid.NewGuid().ToString());
                     if (!mClient.IsConnected)
                     {
                         Console.WriteLine("Failed to connect to mqtt");
@@ -212,7 +219,7 @@ namespace AdminApp
                     else
                     {
                         mClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
-                        //Subscribe to topics
+                        
                         byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
                         mClient.Subscribe(topic, qosLevels);
                         topicArray.Add(topic.ToString());

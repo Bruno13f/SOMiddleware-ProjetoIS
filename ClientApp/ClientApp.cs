@@ -15,11 +15,15 @@ using System.Xml.Linq;
 using System.Security.AccessControl;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Web.UI.WebControls;
+using uPLibrary.Networking.M2Mqtt;
+using uPLibrary.Networking.M2Mqtt.Messages;
 
 namespace ClientApp
 {
     public partial class ClientApp : Form
     {
+        MqttClient mClient = new MqttClient("127.0.0.1");
+        string[] topic = { "updateOffices" };
         string baseURI = @"http://localhost:50591";
         string app = "LibraryApp";
         string appAdmin = "LibraryAdmin";
@@ -31,6 +35,20 @@ namespace ClientApp
             createLibrary();
             getAllOffices();
             this.FormClosing += ClientApp_FormClosing;
+
+            mClient.Connect(Guid.NewGuid().ToString());
+            if (!mClient.IsConnected)
+            {
+                Console.WriteLine("Failed to connect to mqtt");
+
+            }
+            else
+            {
+                mClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
+                //Subscribe to topics
+                byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
+                mClient.Subscribe(topic, qosLevels);
+            }
         }
 
         private void ClientApp_FormClosing(object sender, FormClosingEventArgs e)
@@ -39,6 +57,20 @@ namespace ClientApp
             request.AddUrlSegment("application", app);
 
             client.Execute(request);
+
+            if (mClient.IsConnected)
+            {
+                mClient.Unsubscribe(topic);
+                mClient.Disconnect();
+            }
+        }
+
+        private void Client_MqttMsgPublishReceived(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgPublishEventArgs e)
+        {
+            this.Invoke((MethodInvoker)delegate () {
+                MessageBox.Show("Changes in Offices");
+                getAllOffices();
+            });
         }
 
 
