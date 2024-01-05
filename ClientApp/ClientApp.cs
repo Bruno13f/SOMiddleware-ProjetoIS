@@ -159,9 +159,6 @@ namespace ClientApp
 
             if (response.IsSuccessful)
             {
-                byte[] msg = Encoding.UTF8.GetBytes(container + " was reserved");
-                mClient.Publish(topic[0], msg);
-
                 MessageBox.Show(comboBoxOffices.SelectedItem.ToString() + " reserved");
                 getAllOffices();
             }
@@ -235,11 +232,6 @@ namespace ClientApp
             rootElement.AppendChild(resTypeElement);
 
             return xmlDoc;
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            getAllOffices();
         }
     }
 }

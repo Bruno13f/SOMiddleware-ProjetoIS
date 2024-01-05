@@ -218,14 +218,11 @@ namespace AdminApp
                     }
                     else
                     {
-                        if (!topicArray.Contains(topic.ToString()))
-                        {
-                            mClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
+                        mClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
 
-                            byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
-                            mClient.Subscribe(new string[] { topic.ToString() }, qosLevels);
-                            topicArray.Add(topic.ToString());
-                        }
+                        byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
+                        mClient.Subscribe(new string[] { topic.ToString() }, qosLevels);
+                        topicArray.Add(topic.ToString());
                     }
                 }
                 
