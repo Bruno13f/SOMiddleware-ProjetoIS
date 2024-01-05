@@ -327,12 +327,21 @@ namespace MiddlewareDatabaseAPI.Controllers
                 if (value.content == null || value.content == "")
                     return BadRequest("Error - Trying to create Data with empty content");
 
-                result = controller.PostData(new Data { name = value.name, content = value.content, parent = value.parent });
+                string nameValue;
+                if (!UniqueName(value.name, "Data"))
+                {
+
+                    nameValue = NewName(value.name, "Data");
+                }
+                else
+                    nameValue = value.name;
+
+                result = controller.PostData(new Data { name = nameValue, content = value.content, parent = value.parent });
                 flag = false;
 
                 try
                 {
-                    Data d = getData(value.name);
+                    Data d = getData(nameValue);
 
                     List<string> listOfEndpoints = new List<string>();
                     string queryString = "SELECT endpoint FROM Subscription WHERE parent=@parent AND event='1'";

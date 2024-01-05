@@ -109,21 +109,12 @@ namespace MiddlewareDatabaseAPI.Controllers
         public string[] PostData(Data value)
         {
 
-            string nameValue;
-            if (!UniqueName(value.name, "Data"))
-            {
-
-                nameValue = NewName(value.name, "Data");
-            }
-            else
-                nameValue = value.name;
-
             string queryString = "INSERT INTO Data (name, content, parent, creation_dt) VALUES (@name, @content, @parent, @creation_dt)";
 
             using (SqlConnection connection = new SqlConnection(connStr))
             {
                 SqlCommand command = new SqlCommand(queryString, connection);
-                command.Parameters.AddWithValue("@name", nameValue);
+                command.Parameters.AddWithValue("@name", value.name);
                 command.Parameters.AddWithValue("@content", value.content);
                 command.Parameters.AddWithValue("@parent", value.parent);
                 DateTime now = DateTime.UtcNow;
