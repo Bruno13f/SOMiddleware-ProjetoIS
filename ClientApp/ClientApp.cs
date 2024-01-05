@@ -44,7 +44,7 @@ namespace ClientApp
             else
             {
                 mClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
-                //Subscribe to topics
+                
                 byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
                 mClient.Subscribe(topic, qosLevels);
             }
