@@ -70,33 +70,8 @@ namespace ClientApp
             this.Invoke((MethodInvoker)delegate () {
                 string message = Encoding.UTF8.GetString(e.Message);
                 MessageBox.Show(message);
-                if (message.Contains("vacated"))
-                    updateActiveReserves(message);
                 getAllOffices();
             });
-        }
-
-        private void updateActiveReserves (string message)
-        {
-            char[] delimiter = { ' ' };
-
-            string[] stringArray = message.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
-
-            string text = richTextBoxActiveReserves.Text;
-
-            string[] delimiter2 = { Environment.NewLine };
-
-            var list = text.Split(delimiter2, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-            var newList = list.Where(item => !item.Contains(stringArray[0])).ToArray();
-
-            richTextBoxActiveReserves.Clear();
-
-            foreach ( string item in newList )
-            {
-                richTextBoxActiveReserves.AppendText(item + Environment.NewLine);
-            }
-
         }
 
         private void createLibrary()
@@ -174,7 +149,6 @@ namespace ClientApp
                 return;
             }
 
-
             var request = new RestRequest("/api/somiod/{application}/{container}", Method.Post);
             request.AddUrlSegment("application", appAdmin);
             request.AddUrlSegment("container", comboBoxOffices.SelectedItem.ToString());
@@ -184,7 +158,7 @@ namespace ClientApp
 
             if (response.IsSuccessful)
             {
-                richTextBoxActiveReserves.AppendText(comboBoxOffices.SelectedItem.ToString() + " reserved" + Environment.NewLine);
+                MessageBox.Show(comboBoxOffices.SelectedItem.ToString() + " reserved");
             }
             else
             {
@@ -196,7 +170,7 @@ namespace ClientApp
         private bool VerifyIfReserved (string container)
         {
             var request = new RestRequest("/api/somiod/{application}/{container}", Method.Get);
-            request.AddUrlSegment("application", app);
+            request.AddUrlSegment("application", appAdmin);
             request.AddUrlSegment("container", container);
             request.RequestFormat = DataFormat.Xml;
             request.AddHeader("somiod-discover", "data");
@@ -209,11 +183,7 @@ namespace ClientApp
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(response.Content);
 
-                if (xmlDoc.DocumentElement.ChildNodes.Count == 0)
-                {
-                    return false;
-                }
-                else
+                if (xmlDoc.DocumentElement.ChildNodes.Count != 0)
                 {
                     return true;
                 }

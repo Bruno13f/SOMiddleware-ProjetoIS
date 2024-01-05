@@ -58,7 +58,7 @@ namespace AdminApp
         private void Client_MqttMsgPublishReceived(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgPublishEventArgs e)
         {
             this.Invoke((MethodInvoker)delegate () {
-                MessageBox.Show("A Office has Reserved");
+                MessageBox.Show("An Office has been Reserved");
                 getAllOffices();
             });
         }
@@ -218,11 +218,14 @@ namespace AdminApp
                     }
                     else
                     {
-                        mClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
-                        
-                        byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
-                        mClient.Subscribe(topic, qosLevels);
-                        topicArray.Add(topic.ToString());
+                        if (!topicArray.Contains(topic.ToString()))
+                        {
+                            mClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
+
+                            byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
+                            mClient.Subscribe(new string[] { topic.ToString() }, qosLevels);
+                            topicArray.Add(topic.ToString());
+                        }
                     }
                 }
                 
@@ -233,7 +236,7 @@ namespace AdminApp
             }
             else
             {
-                MessageBox.Show("Error creating " + textBoxCreateNameOffice.Text + " office");
+                MessageBox.Show("Error creating " + textBoxCreateNameOffice.Text);
             }
 
         }
@@ -252,14 +255,20 @@ namespace AdminApp
             request.AddUrlSegment("container", comboBoxDeleteOffices.SelectedItem.ToString());
             request.AddHeader("Content-type", "application/xml");
 
+            string container = comboBoxDeleteOffices.SelectedItem.ToString();
+
             var response = client.Execute(request);
 
             if (response.IsSuccessful)
             {
-                byte[] msg = Encoding.UTF8.GetBytes(textBoxCreateNameOffice.Text + " Deleted");
+                byte[] msg = Encoding.UTF8.GetBytes(container + " deleted");
                 mClient.Publish(topic[0], msg);
+                string[] unsubscribe = { "api/somiod/" + app + "/" + container };
+                topicArray.Remove(unsubscribe.ToString());
+                mClient.Unsubscribe(unsubscribe);
+                MessageBox.Show("Deleted " + container);
                 getAllOffices();
-                MessageBox.Show("Deleted Office " + comboBoxDeleteOffices.SelectedItem.ToString());
+                
             }
             else
             {
@@ -298,9 +307,11 @@ namespace AdminApp
 
                     var response = client.Execute(request);
 
+                    string container = comboBoxVacantOffice.SelectedItem.ToString();
+
                     if (response.IsSuccessful)
                     {
-                        byte[] msg = Encoding.UTF8.GetBytes(textBoxCreateNameOffice.Text + " vacated");
+                        byte[] msg = Encoding.UTF8.GetBytes(container + " vacated");
                         mClient.Publish(topic[0], msg);
 
                         MessageBox.Show(comboBoxVacantOffice.SelectedItem.ToString() + " vacated");
@@ -308,7 +319,7 @@ namespace AdminApp
                     }
                     else
                     {
-                        MessageBox.Show("Error vacate " + comboBoxVacantOffice.SelectedItem.ToString());
+                        MessageBox.Show("Error vacating " + comboBoxVacantOffice.SelectedItem.ToString());
                     }
                 }
             }
