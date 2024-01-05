@@ -28,32 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.richTextBoxOffices = new System.Windows.Forms.RichTextBox();
             this.groupBoxGetAllOffices = new System.Windows.Forms.GroupBox();
             this.groupBoxReserveOffice = new System.Windows.Forms.GroupBox();
             this.labelName = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBoxName = new System.Windows.Forms.TextBox();
             this.labelChooseOffice = new System.Windows.Forms.Label();
             this.btnReserveOffice = new System.Windows.Forms.Button();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.comboBoxOffices = new System.Windows.Forms.ComboBox();
             this.groupBoxActiveReserves = new System.Windows.Forms.GroupBox();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.richTextBoxActiveReserves = new System.Windows.Forms.RichTextBox();
             this.groupBoxGetAllOffices.SuspendLayout();
             this.groupBoxReserveOffice.SuspendLayout();
             this.groupBoxActiveReserves.SuspendLayout();
             this.SuspendLayout();
             // 
-            // richTextBox1
+            // richTextBoxOffices
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(20, 23);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(402, 190);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
+            this.richTextBoxOffices.Location = new System.Drawing.Point(20, 23);
+            this.richTextBoxOffices.Name = "richTextBoxOffices";
+            this.richTextBoxOffices.Size = new System.Drawing.Size(402, 190);
+            this.richTextBoxOffices.TabIndex = 0;
+            this.richTextBoxOffices.Text = "";
             // 
             // groupBoxGetAllOffices
             // 
-            this.groupBoxGetAllOffices.Controls.Add(this.richTextBox1);
+            this.groupBoxGetAllOffices.Controls.Add(this.richTextBoxOffices);
             this.groupBoxGetAllOffices.Location = new System.Drawing.Point(25, 34);
             this.groupBoxGetAllOffices.Name = "groupBoxGetAllOffices";
             this.groupBoxGetAllOffices.Size = new System.Drawing.Size(442, 234);
@@ -64,10 +64,10 @@
             // groupBoxReserveOffice
             // 
             this.groupBoxReserveOffice.Controls.Add(this.labelName);
-            this.groupBoxReserveOffice.Controls.Add(this.textBox1);
+            this.groupBoxReserveOffice.Controls.Add(this.textBoxName);
             this.groupBoxReserveOffice.Controls.Add(this.labelChooseOffice);
             this.groupBoxReserveOffice.Controls.Add(this.btnReserveOffice);
-            this.groupBoxReserveOffice.Controls.Add(this.comboBox1);
+            this.groupBoxReserveOffice.Controls.Add(this.comboBoxOffices);
             this.groupBoxReserveOffice.Location = new System.Drawing.Point(485, 34);
             this.groupBoxReserveOffice.Name = "groupBoxReserveOffice";
             this.groupBoxReserveOffice.Size = new System.Drawing.Size(293, 234);
@@ -84,12 +84,12 @@
             this.labelName.TabIndex = 4;
             this.labelName.Text = "Your Name";
             // 
-            // textBox1
+            // textBoxName
             // 
-            this.textBox1.Location = new System.Drawing.Point(28, 130);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(235, 22);
-            this.textBox1.TabIndex = 3;
+            this.textBoxName.Location = new System.Drawing.Point(28, 130);
+            this.textBoxName.Name = "textBoxName";
+            this.textBoxName.Size = new System.Drawing.Size(235, 22);
+            this.textBoxName.TabIndex = 3;
             // 
             // labelChooseOffice
             // 
@@ -108,18 +108,19 @@
             this.btnReserveOffice.TabIndex = 1;
             this.btnReserveOffice.Text = "Request Office";
             this.btnReserveOffice.UseVisualStyleBackColor = true;
+            this.btnReserveOffice.Click += new System.EventHandler(this.btnReserveOffice_Click);
             // 
-            // comboBox1
+            // comboBoxOffices
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(28, 58);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(235, 24);
-            this.comboBox1.TabIndex = 0;
+            this.comboBoxOffices.FormattingEnabled = true;
+            this.comboBoxOffices.Location = new System.Drawing.Point(28, 58);
+            this.comboBoxOffices.Name = "comboBoxOffices";
+            this.comboBoxOffices.Size = new System.Drawing.Size(235, 24);
+            this.comboBoxOffices.TabIndex = 0;
             // 
             // groupBoxActiveReserves
             // 
-            this.groupBoxActiveReserves.Controls.Add(this.richTextBox2);
+            this.groupBoxActiveReserves.Controls.Add(this.richTextBoxActiveReserves);
             this.groupBoxActiveReserves.Location = new System.Drawing.Point(25, 303);
             this.groupBoxActiveReserves.Name = "groupBoxActiveReserves";
             this.groupBoxActiveReserves.Size = new System.Drawing.Size(753, 124);
@@ -127,13 +128,13 @@
             this.groupBoxActiveReserves.TabStop = false;
             this.groupBoxActiveReserves.Text = "Your Active Reserves";
             // 
-            // richTextBox2
+            // richTextBoxActiveReserves
             // 
-            this.richTextBox2.Location = new System.Drawing.Point(20, 31);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(711, 74);
-            this.richTextBox2.TabIndex = 0;
-            this.richTextBox2.Text = "";
+            this.richTextBoxActiveReserves.Location = new System.Drawing.Point(20, 31);
+            this.richTextBoxActiveReserves.Name = "richTextBoxActiveReserves";
+            this.richTextBoxActiveReserves.Size = new System.Drawing.Size(711, 74);
+            this.richTextBoxActiveReserves.TabIndex = 0;
+            this.richTextBoxActiveReserves.Text = "";
             // 
             // ClientApp
             // 
@@ -155,16 +156,16 @@
 
         #endregion
 
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox richTextBoxOffices;
         private System.Windows.Forms.GroupBox groupBoxGetAllOffices;
         private System.Windows.Forms.GroupBox groupBoxReserveOffice;
         private System.Windows.Forms.Button btnReserveOffice;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox comboBoxOffices;
         private System.Windows.Forms.Label labelName;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBoxName;
         private System.Windows.Forms.Label labelChooseOffice;
         private System.Windows.Forms.GroupBox groupBoxActiveReserves;
-        private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.RichTextBox richTextBoxActiveReserves;
     }
 }
 
