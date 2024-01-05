@@ -68,11 +68,36 @@ namespace ClientApp
         private void Client_MqttMsgPublishReceived(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgPublishEventArgs e)
         {
             this.Invoke((MethodInvoker)delegate () {
-                MessageBox.Show("Changes in Offices");
+                string message = Encoding.UTF8.GetString(e.Message);
+                MessageBox.Show(message);
+                if (message.Contains("vacated"))
+                    updateActiveReserves(message);
                 getAllOffices();
             });
         }
 
+        private void updateActiveReserves (string message)
+        {
+            char[] delimiter = { ' ' };
+
+            string[] stringArray = message.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
+
+            string text = richTextBoxActiveReserves.Text;
+
+            string[] delimiter2 = { Environment.NewLine };
+
+            var list = text.Split(delimiter2, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            var newList = list.Where(item => !item.Contains(stringArray[0])).ToArray();
+
+            richTextBoxActiveReserves.Clear();
+
+            foreach ( string item in newList )
+            {
+                richTextBoxActiveReserves.AppendText(item + Environment.NewLine);
+            }
+
+        }
 
         private void createLibrary()
         {
@@ -143,6 +168,13 @@ namespace ClientApp
                 return;
             }
 
+            if (VerifyIfReserved(comboBoxOffices.SelectedItem.ToString()))
+            {
+                MessageBox.Show("Office already reserved");
+                return;
+            }
+
+
             var request = new RestRequest("/api/somiod/{application}/{container}", Method.Post);
             request.AddUrlSegment("application", appAdmin);
             request.AddUrlSegment("container", comboBoxOffices.SelectedItem.ToString());
@@ -159,6 +191,36 @@ namespace ClientApp
                 MessageBox.Show("Error creating " + textBoxName.Text + " data");
             }
 
+        }
+
+        private bool VerifyIfReserved (string container)
+        {
+            var request = new RestRequest("/api/somiod/{application}/{container}", Method.Get);
+            request.AddUrlSegment("application", app);
+            request.AddUrlSegment("container", container);
+            request.RequestFormat = DataFormat.Xml;
+            request.AddHeader("somiod-discover", "data");
+            request.AddHeader("Accept", "application/xml");
+
+            var response = client.Execute(request);
+
+            if (response.IsSuccessful)
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.LoadXml(response.Content);
+
+                if (xmlDoc.DocumentElement.ChildNodes.Count == 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+
+            }
+
+            return false;
         }
 
         private XmlDocument createXmlDocumentApp(string name)

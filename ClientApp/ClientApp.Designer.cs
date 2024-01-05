@@ -38,7 +38,6 @@
             this.comboBoxOffices = new System.Windows.Forms.ComboBox();
             this.groupBoxActiveReserves = new System.Windows.Forms.GroupBox();
             this.richTextBoxActiveReserves = new System.Windows.Forms.RichTextBox();
-            this.btnRefresh = new System.Windows.Forms.Button();
             this.groupBoxGetAllOffices.SuspendLayout();
             this.groupBoxReserveOffice.SuspendLayout();
             this.groupBoxActiveReserves.SuspendLayout();
@@ -46,19 +45,21 @@
             // 
             // richTextBoxOffices
             // 
-            this.richTextBoxOffices.Location = new System.Drawing.Point(20, 23);
+            this.richTextBoxOffices.Location = new System.Drawing.Point(15, 19);
+            this.richTextBoxOffices.Margin = new System.Windows.Forms.Padding(2);
             this.richTextBoxOffices.Name = "richTextBoxOffices";
-            this.richTextBoxOffices.Size = new System.Drawing.Size(402, 159);
+            this.richTextBoxOffices.Size = new System.Drawing.Size(302, 155);
             this.richTextBoxOffices.TabIndex = 0;
             this.richTextBoxOffices.Text = "";
             // 
             // groupBoxGetAllOffices
             // 
-            this.groupBoxGetAllOffices.Controls.Add(this.btnRefresh);
             this.groupBoxGetAllOffices.Controls.Add(this.richTextBoxOffices);
-            this.groupBoxGetAllOffices.Location = new System.Drawing.Point(25, 34);
+            this.groupBoxGetAllOffices.Location = new System.Drawing.Point(19, 28);
+            this.groupBoxGetAllOffices.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxGetAllOffices.Name = "groupBoxGetAllOffices";
-            this.groupBoxGetAllOffices.Size = new System.Drawing.Size(442, 234);
+            this.groupBoxGetAllOffices.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxGetAllOffices.Size = new System.Drawing.Size(332, 190);
             this.groupBoxGetAllOffices.TabIndex = 1;
             this.groupBoxGetAllOffices.TabStop = false;
             this.groupBoxGetAllOffices.Text = "Offices";
@@ -70,9 +71,11 @@
             this.groupBoxReserveOffice.Controls.Add(this.labelChooseOffice);
             this.groupBoxReserveOffice.Controls.Add(this.btnReserveOffice);
             this.groupBoxReserveOffice.Controls.Add(this.comboBoxOffices);
-            this.groupBoxReserveOffice.Location = new System.Drawing.Point(485, 34);
+            this.groupBoxReserveOffice.Location = new System.Drawing.Point(364, 28);
+            this.groupBoxReserveOffice.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxReserveOffice.Name = "groupBoxReserveOffice";
-            this.groupBoxReserveOffice.Size = new System.Drawing.Size(293, 234);
+            this.groupBoxReserveOffice.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxReserveOffice.Size = new System.Drawing.Size(220, 190);
             this.groupBoxReserveOffice.TabIndex = 2;
             this.groupBoxReserveOffice.TabStop = false;
             this.groupBoxReserveOffice.Text = "Reserve Office";
@@ -80,33 +83,37 @@
             // labelName
             // 
             this.labelName.AutoSize = true;
-            this.labelName.Location = new System.Drawing.Point(106, 113);
+            this.labelName.Location = new System.Drawing.Point(80, 92);
+            this.labelName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelName.Name = "labelName";
-            this.labelName.Size = new System.Drawing.Size(75, 16);
+            this.labelName.Size = new System.Drawing.Size(60, 13);
             this.labelName.TabIndex = 4;
             this.labelName.Text = "Your Name";
             // 
             // textBoxName
             // 
-            this.textBoxName.Location = new System.Drawing.Point(28, 130);
+            this.textBoxName.Location = new System.Drawing.Point(21, 106);
+            this.textBoxName.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxName.Name = "textBoxName";
-            this.textBoxName.Size = new System.Drawing.Size(235, 22);
+            this.textBoxName.Size = new System.Drawing.Size(177, 20);
             this.textBoxName.TabIndex = 3;
             // 
             // labelChooseOffice
             // 
             this.labelChooseOffice.AutoSize = true;
-            this.labelChooseOffice.Location = new System.Drawing.Point(102, 38);
+            this.labelChooseOffice.Location = new System.Drawing.Point(76, 31);
+            this.labelChooseOffice.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelChooseOffice.Name = "labelChooseOffice";
-            this.labelChooseOffice.Size = new System.Drawing.Size(91, 16);
+            this.labelChooseOffice.Size = new System.Drawing.Size(74, 13);
             this.labelChooseOffice.TabIndex = 2;
             this.labelChooseOffice.Text = "Choose Office";
             // 
             // btnReserveOffice
             // 
-            this.btnReserveOffice.Location = new System.Drawing.Point(94, 189);
+            this.btnReserveOffice.Location = new System.Drawing.Point(70, 154);
+            this.btnReserveOffice.Margin = new System.Windows.Forms.Padding(2);
             this.btnReserveOffice.Name = "btnReserveOffice";
-            this.btnReserveOffice.Size = new System.Drawing.Size(118, 24);
+            this.btnReserveOffice.Size = new System.Drawing.Size(88, 20);
             this.btnReserveOffice.TabIndex = 1;
             this.btnReserveOffice.Text = "Request Office";
             this.btnReserveOffice.UseVisualStyleBackColor = true;
@@ -115,47 +122,39 @@
             // comboBoxOffices
             // 
             this.comboBoxOffices.FormattingEnabled = true;
-            this.comboBoxOffices.Location = new System.Drawing.Point(28, 58);
+            this.comboBoxOffices.Location = new System.Drawing.Point(21, 47);
+            this.comboBoxOffices.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxOffices.Name = "comboBoxOffices";
-            this.comboBoxOffices.Size = new System.Drawing.Size(235, 24);
+            this.comboBoxOffices.Size = new System.Drawing.Size(177, 21);
             this.comboBoxOffices.TabIndex = 0;
             // 
             // groupBoxActiveReserves
             // 
             this.groupBoxActiveReserves.Controls.Add(this.richTextBoxActiveReserves);
-            this.groupBoxActiveReserves.Location = new System.Drawing.Point(25, 303);
+            this.groupBoxActiveReserves.Location = new System.Drawing.Point(19, 238);
             this.groupBoxActiveReserves.Name = "groupBoxActiveReserves";
-            this.groupBoxActiveReserves.Size = new System.Drawing.Size(753, 124);
+            this.groupBoxActiveReserves.Size = new System.Drawing.Size(565, 101);
             this.groupBoxActiveReserves.TabIndex = 3;
             this.groupBoxActiveReserves.TabStop = false;
             this.groupBoxActiveReserves.Text = "Your Active Reserves";
             // 
             // richTextBoxActiveReserves
             // 
-            this.richTextBoxActiveReserves.Location = new System.Drawing.Point(20, 31);
+            this.richTextBoxActiveReserves.Location = new System.Drawing.Point(15, 24);
             this.richTextBoxActiveReserves.Name = "richTextBoxActiveReserves";
-            this.richTextBoxActiveReserves.Size = new System.Drawing.Size(711, 74);
+            this.richTextBoxActiveReserves.Size = new System.Drawing.Size(531, 64);
             this.richTextBoxActiveReserves.TabIndex = 0;
             this.richTextBoxActiveReserves.Text = "";
             // 
-            // btnRefresh
-            // 
-            this.btnRefresh.Location = new System.Drawing.Point(153, 191);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(124, 23);
-            this.btnRefresh.TabIndex = 1;
-            this.btnRefresh.Text = "Refresh Offices";
-            this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.button1_Click);
-            // 
             // ClientApp
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(600, 366);
             this.Controls.Add(this.groupBoxActiveReserves);
             this.Controls.Add(this.groupBoxReserveOffice);
             this.Controls.Add(this.groupBoxGetAllOffices);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "ClientApp";
             this.Text = "Library App";
             this.groupBoxGetAllOffices.ResumeLayout(false);
@@ -178,7 +177,6 @@
         private System.Windows.Forms.Label labelChooseOffice;
         private System.Windows.Forms.GroupBox groupBoxActiveReserves;
         private System.Windows.Forms.RichTextBox richTextBoxActiveReserves;
-        private System.Windows.Forms.Button btnRefresh;
     }
 }
 

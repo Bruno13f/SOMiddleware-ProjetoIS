@@ -166,7 +166,7 @@ namespace AdminApp
             if (response.IsSuccessful)
             {
 
-                byte[] msg = Encoding.UTF8.GetBytes("Office Created");
+                byte[] msg = Encoding.UTF8.GetBytes(textBoxCreateNameOffice.Text + " Created");
                 mClient.Publish(topic[0], msg);
 
                 var requestSubCreation = new RestRequest("/api/somiod/{application}/{container}", Method.Post);
@@ -256,6 +256,8 @@ namespace AdminApp
 
             if (response.IsSuccessful)
             {
+                byte[] msg = Encoding.UTF8.GetBytes(textBoxCreateNameOffice.Text + " Deleted");
+                mClient.Publish(topic[0], msg);
                 getAllOffices();
                 MessageBox.Show("Deleted Office " + comboBoxDeleteOffices.SelectedItem.ToString());
             }
@@ -298,6 +300,9 @@ namespace AdminApp
 
                     if (response.IsSuccessful)
                     {
+                        byte[] msg = Encoding.UTF8.GetBytes(textBoxCreateNameOffice.Text + " vacated");
+                        mClient.Publish(topic[0], msg);
+
                         MessageBox.Show(comboBoxVacantOffice.SelectedItem.ToString() + " vacated");
                         getAllOffices();
                     }
@@ -312,8 +317,6 @@ namespace AdminApp
                 MessageBox.Show("Error vacating " + comboBoxVacantOffice.SelectedItem.ToString());
             }
 
-
-            //vacant
         }
 
         private XmlDocument createXmlDocument(string name, bool flag)
