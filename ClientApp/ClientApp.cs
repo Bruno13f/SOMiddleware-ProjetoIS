@@ -29,7 +29,17 @@ namespace ClientApp
             client = new RestClient(baseURI);
             createLibrary();
             getAllOffices();
+            this.FormClosing += ClientApp_FormClosing;
         }
+
+        private void ClientApp_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            var request = new RestRequest("/api/somiod/{application}", Method.Delete);
+            request.AddUrlSegment("application", app);
+
+            client.Execute(request);
+        }
+
 
         private void createLibrary()
         {

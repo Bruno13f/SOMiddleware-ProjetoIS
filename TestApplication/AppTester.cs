@@ -181,7 +181,6 @@ namespace TestApplication
 
             var request = new RestRequest("/api/somiod/{application}", Method.Delete);
             request.AddUrlSegment("application", textBoxName.Text);
-            request.AddParameter("application/xml", createXmlDocument(textBoxName.Text).OuterXml, ParameterType.RequestBody);
 
             var response = client.Execute(request);
 

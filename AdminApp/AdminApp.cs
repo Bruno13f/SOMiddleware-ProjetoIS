@@ -108,7 +108,7 @@ namespace AdminApp
                 return;
             }
 
-            var request = new RestRequest("/api/somiod/LibraryAdmin", Method.Post);
+            var request = new RestRequest("/api/somiod/{application}", Method.Post);
             request.AddParameter("application/xml", createXmlDocument(textBoxCreateNameOffice.Text).OuterXml, ParameterType.RequestBody);
 
             var response = client.Execute(request);
