@@ -30,11 +30,6 @@ namespace AdminApp
             getAllOffices();
             this.FormClosing += ClientApp_FormClosing;
             mClient.Connect(Guid.NewGuid().ToString());
-            if (!mClient.IsConnected)
-            {
-                Console.WriteLine("Failed to connect to mqtt");
-
-            }
         }
 
         private void ClientApp_FormClosing(object sender, FormClosingEventArgs e)
@@ -211,17 +206,17 @@ namespace AdminApp
                 {
                     string[] topic = { "api/somiod/" + app + "/" + textBoxCreateNameOffice.Text };
 
+                    
                     if (!mClient.IsConnected)
                     {
                         Console.WriteLine("Failed to connect to mqtt");
-
                     }
                     else
                     {
                         mClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
 
                         byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
-                        mClient.Subscribe(new string[] { topic.ToString() }, qosLevels);
+                        mClient.Subscribe(topic, qosLevels);
                         topicArray.Add(topic.ToString());
                     }
                 }
