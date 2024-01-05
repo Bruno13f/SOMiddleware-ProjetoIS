@@ -220,6 +220,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                         int rows = command.ExecuteNonQuery();
                         if (rows > 0)
                         {
+
                             return Ok("Data " + data + " deleted");
                         }
                         else

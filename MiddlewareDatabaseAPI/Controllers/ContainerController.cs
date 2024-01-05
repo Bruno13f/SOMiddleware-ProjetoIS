@@ -13,6 +13,12 @@ using System.Collections;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 using System.Web.Management;
+using uPLibrary.Networking.M2Mqtt;
+using System.Text;
+using System.Security.Policy;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace MiddlewareDatabaseAPI.Controllers
 {
@@ -324,7 +330,71 @@ namespace MiddlewareDatabaseAPI.Controllers
                 result = controller.PostData(new Data { name = value.name, content = value.content, parent = value.parent });
                 flag = false;
 
-            }else if (value.res_type == "subscription")
+                try
+                {
+                    List<string> listOfEndpoints = new List<string>();
+                    string queryString = "SELECT endpoint FROM Subscription WHERE parent=@parent AND event='1'";
+
+                    using (SqlConnection connection = new SqlConnection(connStr))
+                    {
+                        SqlCommand command = new SqlCommand(queryString, connection);
+                        connection.Open();
+                        command.Parameters.AddWithValue("@parent", value.parent);
+
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                listOfEndpoints.Add((string)reader["endpoint"]);
+                            }
+                        }
+                    }
+
+                    string topic = "api/somiod/" + application + "/" + container;
+                    byte[] msg = Encoding.UTF8.GetBytes("Creation: \n" + value);
+                    string xmlContent = "<root><key>value</key></root>"; 
+
+                    string httpPattern = @"^http:\/\/";
+                    string mqttPattern = @"^mqtt:\/\/";
+
+                    foreach (string endpoint in listOfEndpoints)
+                    {
+                        if (Regex.IsMatch(endpoint, mqttPattern))
+                        {
+                            //string ipAddressPattern = @"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}?:(\d+)";
+                            string ipAddressPattern = @"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b";
+                            Match ipAddressMatch = Regex.Match(endpoint, ipAddressPattern);
+
+                            if (ipAddressMatch.Success)
+                            {
+                                string ipAddress = ipAddressMatch.Value;
+                                MqttClient client = new MqttClient(ipAddress);
+                                if (client.IsConnected)
+                                {
+                                    client.Connect(Guid.NewGuid().ToString());
+                                    client.Publish(topic, msg);
+                                }
+                            }
+                        }
+                        if (Regex.IsMatch(endpoint, httpPattern))
+                        {
+                            using (HttpClient httpClient = new HttpClient())
+                            {
+                                StringContent content = new StringContent(xmlContent, Encoding.UTF8, "application/xml");
+                                httpClient.PostAsync(endpoint, content);
+                            }
+                        }
+                    }
+
+                }
+                catch (Exception)
+                {
+                    return InternalServerError();
+                }
+
+            }
+            else if (value.res_type == "subscription")
             {
 
                 if (value.event_mqtt != "1" && value.event_mqtt != "2")
