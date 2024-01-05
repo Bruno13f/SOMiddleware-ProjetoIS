@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Http;
 using MiddlewareDatabaseAPI.Models;
@@ -158,7 +159,7 @@ namespace MiddlewareDatabaseAPI.Controllers
             return new int[] { idApp, idContParent, idCont };
         }
 
-        public Data getData(string name)
+        protected Data getData(string name)
         {
             string queryString = "SELECT * FROM Data WHERE name = @data";
             using (SqlConnection connection = new SqlConnection(connStr))
@@ -187,5 +188,22 @@ namespace MiddlewareDatabaseAPI.Controllers
             return null;
         }
 
+        protected bool IsServerAvailable(string endpoint)
+        {
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(endpoint);
+                request.Timeout = 5000; // Set a timeout value
+
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    return response.StatusCode == HttpStatusCode.OK;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

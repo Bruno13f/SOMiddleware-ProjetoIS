@@ -368,6 +368,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                     byte[] msg = Encoding.UTF8.GetBytes(xmlContent);
 
                     string httpPattern = @"^http:\/\/";
+                    string httpsPattern = @"^https:\/\/";
                     string mqttPattern = @"^mqtt:\/\/";
 
                     foreach (string endpoint in listOfEndpoints)
@@ -382,20 +383,26 @@ namespace MiddlewareDatabaseAPI.Controllers
                             {
                                 string ipAddress = ipAddressMatch.Value;
                                 MqttClient client = new MqttClient(ipAddress);
+                                client.Connect(Guid.NewGuid().ToString());
                                 if (client.IsConnected)
                                 {
-                                    client.Connect(Guid.NewGuid().ToString());
                                     client.Publish(topic, msg);
                                 }
                             }
                         }
-                        if (Regex.IsMatch(endpoint, httpPattern))
+                        if (Regex.IsMatch(endpoint, httpPattern) || Regex.IsMatch(endpoint, httpsPattern))
                         {
-                            using (HttpClient httpClient = new HttpClient())
+                            if (IsServerAvailable(endpoint))
                             {
-                                StringContent content = new StringContent(xmlContent, Encoding.UTF8, "application/xml");
-                                httpClient.PostAsync(endpoint, content);
-                            }
+                                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(endpoint);
+                                request.Method = "POST";
+                                byte[] byteArray = Encoding.UTF8.GetBytes(xmlContent);
+                                request.ContentLength = byteArray.Length;
+                                using (Stream dataStream = request.GetRequestStream())
+                                {
+                                    dataStream.Write(byteArray, 0, byteArray.Length);
+                                }
+                            }                            
                         }
                     }
 
