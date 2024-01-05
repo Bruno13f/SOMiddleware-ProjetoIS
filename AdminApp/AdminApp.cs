@@ -68,6 +68,8 @@ namespace AdminApp
 
                 richTextBoxOpenOffices.Clear();
                 richTextBoxOccupiedOffices.Clear();
+                comboBoxDeleteOffices.Items.Clear();
+                comboBoxVacantOffice.Items.Clear();
 
                 if (mainXmlDoc.DocumentElement.ChildNodes.Count == 0)
                 {
@@ -151,7 +153,29 @@ namespace AdminApp
 
         private void buttonDelete_Click(object sender, EventArgs e)
         {
+            if (comboBoxDeleteOffices.SelectedItem == null || comboBoxDeleteOffices.SelectedItem.ToString() == "No Offices")
+            {
+                MessageBox.Show("Invalid Office");
+                return;
+            }
 
+
+            var request = new RestRequest("/api/somiod/{application}/{container}", Method.Delete);
+            request.AddUrlSegment("application", app);
+            request.AddUrlSegment("container", comboBoxDeleteOffices.SelectedItem.ToString());
+            request.AddHeader("Content-type", "application/xml");
+
+            var response = client.Execute(request);
+
+            if (response.IsSuccessful)
+            {
+                getAllOffices();
+                MessageBox.Show("Deleted Office " + comboBoxDeleteOffices.SelectedItem.ToString());
+            }
+            else
+            {
+                MessageBox.Show("Error deleting " + comboBoxDeleteOffices.SelectedItem.ToString());
+            }
         }
 
         private void buttonVacantOffice_Click(object sender, EventArgs e)
