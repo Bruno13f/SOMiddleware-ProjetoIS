@@ -11,6 +11,10 @@ using static System.Net.Mime.MediaTypeNames;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Http.Results;
+using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
+using System.Text;
+using uPLibrary.Networking.M2Mqtt;
 
 namespace MiddlewareDatabaseAPI.Controllers
 {
@@ -108,7 +112,7 @@ namespace MiddlewareDatabaseAPI.Controllers
             string nameValue;
             if (!UniqueName(value.name, "Data"))
             {
-                
+
                 nameValue = NewName(value.name, "Data");
             }
             else
@@ -220,6 +224,63 @@ namespace MiddlewareDatabaseAPI.Controllers
                         int rows = command.ExecuteNonQuery();
                         if (rows > 0)
                         {
+                            Data d = getData(data);
+                           
+                            List<string> listOfEndpoints = new List<string>();
+                            string queryString2 = "SELECT endpoint FROM Subscription WHERE parent=@parent AND event='2'";
+
+                            using (SqlConnection connection2 = new SqlConnection(connStr))
+                            {
+                                SqlCommand command2 = new SqlCommand(queryString2, connection2);
+                                connection2.Open();
+                                command2.Parameters.AddWithValue("@parent", values[2]);
+
+
+                                using (SqlDataReader reader = command2.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        listOfEndpoints.Add((string)reader["endpoint"]);
+                                    }
+                                }
+                            }
+
+                            string topic = "api/somiod/" + application + "/" + container;
+                            string xmlContent = "<Data>\r\n   <event>deletion<envent>\r\n   <content>" + d.content + "</content>\r\n    <creation_dt>" + d.creation_dt.ToString() + "</creation_dt>\r\n " +
+                                "   <id>" + d.id.ToString() + "</id>\r\n    <name>" + d.name + "</name>\r\n    <parent>" + d.parent.ToString() + "</parent>\r\n</Data>";
+                            byte[] msg = Encoding.UTF8.GetBytes(xmlContent);
+
+                            string httpPattern = @"^http:\/\/";
+                            string mqttPattern = @"^mqtt:\/\/";
+
+                            foreach (string endpoint in listOfEndpoints)
+                            {
+                                if (Regex.IsMatch(endpoint, mqttPattern))
+                                {
+                                    //string ipAddressPattern = @"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}?:(\d+)";
+                                    string ipAddressPattern = @"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b";
+                                    Match ipAddressMatch = Regex.Match(endpoint, ipAddressPattern);
+
+                                    if (ipAddressMatch.Success)
+                                    {
+                                        string ipAddress = ipAddressMatch.Value;
+                                        MqttClient client = new MqttClient(ipAddress);
+                                        if (client.IsConnected)
+                                        {
+                                            client.Connect(Guid.NewGuid().ToString());
+                                            client.Publish(topic, msg);
+                                        }
+                                    }
+                                }
+                                if (Regex.IsMatch(endpoint, httpPattern))
+                                {
+                                    using (HttpClient httpClient = new HttpClient())
+                                    {
+                                        StringContent content = new StringContent(xmlContent, Encoding.UTF8, "application/xml");
+                                        httpClient.PostAsync(endpoint, content);
+                                    }
+                                }
+                            }
 
                             return Ok("Data " + data + " deleted");
                         }

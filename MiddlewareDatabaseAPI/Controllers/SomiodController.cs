@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
+using MiddlewareDatabaseAPI.Models;
 
 namespace MiddlewareDatabaseAPI.Controllers
 {
@@ -155,6 +156,35 @@ namespace MiddlewareDatabaseAPI.Controllers
             }
 
             return new int[] { idApp, idContParent, idCont };
+        }
+
+        public Data getData(string name)
+        {
+            string queryString = "SELECT * FROM Data WHERE name = @data";
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                SqlCommand command = new SqlCommand(queryString, connection);
+                command.Parameters.AddWithValue("@data", name);
+
+                command.Connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        Data d = new Data
+                        {
+                            id = (int)reader["id"],
+                            name = (string)reader["name"],
+                            content = (string)reader["content"],
+                            creation_dt = (DateTime)reader["creation_dt"],
+                            parent = (int)reader["parent"]
+                        };
+                        return d;
+                    }
+                }
+            }
+            return null;
         }
 
     }

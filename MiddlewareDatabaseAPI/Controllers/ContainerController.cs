@@ -332,6 +332,8 @@ namespace MiddlewareDatabaseAPI.Controllers
 
                 try
                 {
+                    Data d = getData(value.name);
+
                     List<string> listOfEndpoints = new List<string>();
                     string queryString = "SELECT endpoint FROM Subscription WHERE parent=@parent AND event='1'";
 
@@ -352,8 +354,9 @@ namespace MiddlewareDatabaseAPI.Controllers
                     }
 
                     string topic = "api/somiod/" + application + "/" + container;
-                    byte[] msg = Encoding.UTF8.GetBytes("Creation: \n" + value);
-                    string xmlContent = "<root><key>value</key></root>"; 
+                    string xmlContent = "<Data>\r\n   <event>criation<envent>\r\n   <content>" + d.content + "</content>\r\n    <creation_dt>" + d.creation_dt.ToString() + "</creation_dt>\r\n " +
+                        "   <id>" + d.id.ToString() + "</id>\r\n    <name>" + d.name + "</name>\r\n    <parent>" + d.parent.ToString() + "</parent>\r\n</Data>";
+                    byte[] msg = Encoding.UTF8.GetBytes(xmlContent);
 
                     string httpPattern = @"^http:\/\/";
                     string mqttPattern = @"^mqtt:\/\/";
