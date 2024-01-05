@@ -34,8 +34,25 @@ namespace AdminApp
         {
             var request = new RestRequest("/api/somiod/{application}", Method.Delete);
             request.AddUrlSegment("application", app);
-
             client.Execute(request);
+            if (mClient.IsConnected)
+            {
+                foreach (string topic in topicArray)
+                {
+                    string[] topicUnsubscribe = { topic };
+                    mClient.Unsubscribe(topicUnsubscribe);
+                }
+                mClient.Disconnect();
+            }
+                
+        }
+
+        private void Client_MqttMsgPublishReceived(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgPublishEventArgs e)
+        {
+            this.Invoke((MethodInvoker)delegate () {
+                MessageBox.Show("A Office has Reserved");
+                getAllOffices();
+            });
         }
 
         private void createLibrary()
@@ -79,10 +96,6 @@ namespace AdminApp
                 {
                     richTextBoxOpenOffices.AppendText("No Open Offices");
                     richTextBoxOccupiedOffices.AppendText("No Occupied Offices");
-                    comboBoxDeleteOffices.Items.Add("No Offices");
-                    comboBoxDeleteOffices.SelectedIndex = 0;
-                    comboBoxVacantOffice.Items.Add("No Occupied Offices");
-                    comboBoxVacantOffice.SelectedIndex = 0;
                     return;
                 }
 
@@ -198,6 +211,7 @@ namespace AdminApp
                     }
                     else
                     {
+                        mClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
                         //Subscribe to topics
                         byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
                         mClient.Subscribe(topic, qosLevels);

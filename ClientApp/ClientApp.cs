@@ -81,8 +81,6 @@ namespace ClientApp
                 if (xmlDoc.DocumentElement.ChildNodes.Count == 0)
                 {
                     richTextBoxOffices.AppendText("No Offices");
-                    comboBoxOffices.Items.Add("No Offices");
-                    comboBoxOffices.SelectedIndex = 0;
                     return;
                 }
 
