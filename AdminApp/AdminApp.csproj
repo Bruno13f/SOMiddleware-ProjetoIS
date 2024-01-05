@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DABBE602-24AB-433F-8546-F020CA7EEFEF}</ProjectGuid>
+    <ProjectGuid>{3B98DD9A-4EBC-4911-A97A-84D1D92A286B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>TestData</RootNamespace>
-    <AssemblyName>TestData</AssemblyName>
+    <RootNamespace>AdminApp</RootNamespace>
+    <AssemblyName>AdminApp</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -81,16 +81,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataTester.cs">
+    <Compile Include="AdminApp.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DataTester.Designer.cs">
-      <DependentUpon>DataTester.cs</DependentUpon>
+    <Compile Include="AdminApp.Designer.cs">
+      <DependentUpon>AdminApp.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="DataTester.resx">
-      <DependentUpon>DataTester.cs</DependentUpon>
+    <EmbeddedResource Include="AdminApp.resx">
+      <DependentUpon>AdminApp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

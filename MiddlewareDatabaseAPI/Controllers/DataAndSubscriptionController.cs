@@ -132,7 +132,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                     }
                     else
                     {
-                        return new string[] { "1", nameValue };
+                        return new string[] { "1", value.name };
                     }
                 }
                 catch (Exception)
