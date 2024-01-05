@@ -17,7 +17,7 @@ namespace AdminApp
     public partial class AdminApp : Form
     {
         MqttClient mClient = new MqttClient("127.0.0.1");
-        string topic = { "updateOffices" };
+        string[] topic = { "updateOffices" };
         List<string> topicArray = new List<string>();
         string baseURI = @"http://localhost:50591";
         string app = "LibraryAdmin";
@@ -167,7 +167,7 @@ namespace AdminApp
             {
 
                 byte[] msg = Encoding.UTF8.GetBytes("Office Created");
-                mClient.Publish(topic, msg);
+                mClient.Publish(topic[0], msg);
 
                 var requestSubCreation = new RestRequest("/api/somiod/{application}/{container}", Method.Post);
                 requestSubCreation.AddUrlSegment("application", app);
