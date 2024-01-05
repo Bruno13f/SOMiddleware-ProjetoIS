@@ -73,11 +73,18 @@ namespace AdminApp
                 {
                     richTextBoxOpenOffices.AppendText("No Open Offices");
                     richTextBoxOccupiedOffices.AppendText("No Occupied Offices");
+                    comboBoxDeleteOffices.Items.Add("No Offices");
+                    comboBoxDeleteOffices.SelectedIndex = 0;
+                    comboBoxVacantOffice.Items.Add("No Occupied Offices");
+                    comboBoxVacantOffice.SelectedIndex = 0;
                     return;
                 }
 
                 foreach (XmlNode containerNode in mainXmlDoc.DocumentElement.ChildNodes)
                 {
+
+                    comboBoxDeleteOffices.Items.Add(containerNode.InnerText);
+
                     var containerRequest = new RestRequest("/api/somiod/{application}/{container}", Method.Get);
                     containerRequest.AddUrlSegment("application", app);
                     containerRequest.AddUrlSegment("container", containerNode.InnerText);
@@ -94,6 +101,7 @@ namespace AdminApp
 
                         if (containerXmlDoc.DocumentElement.ChildNodes.Count == 0)
                         {
+                            comboBoxVacantOffice.Items.Add(containerNode.InnerText);
                             richTextBoxOpenOffices.AppendText(containerNode.InnerText + Environment.NewLine);
                         }
                         else
@@ -148,6 +156,13 @@ namespace AdminApp
 
         private void buttonVacantOffice_Click(object sender, EventArgs e)
         {
+            if (comboBoxVacantOffice.SelectedItem == null || comboBoxVacantOffice.SelectedItem.ToString() == "No Occupied Offices")
+            {
+                MessageBox.Show("Invalid Office");
+                return;
+            }
+
+
 
         }
 
