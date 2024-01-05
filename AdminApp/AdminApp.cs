@@ -9,11 +9,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using uPLibrary.Networking.M2Mqtt;
+using uPLibrary.Networking.M2Mqtt.Messages;
 
 namespace AdminApp
 {
     public partial class AdminApp : Form
     {
+        MqttClient mClient = new MqttClient("127.0.0.1");
+        List<string> topicArray = new List<string>();
         string baseURI = @"http://localhost:50591";
         string app = "LibraryAdmin";
         RestClient client = null;
@@ -150,10 +154,13 @@ namespace AdminApp
                 requestSubCreation.AddParameter("application/xml", xmlCreation, ParameterType.RequestBody);
 
                 var responseSubCreation = client.Execute(requestSubCreation);
+                bool flagCreation = false;
+                bool flagDeletion = false;
 
                 if (responseSubCreation.IsSuccessful)
                 {
                     Console.WriteLine("Sub Creation Created - " + textBoxCreateNameOffice.Text);
+                    flagCreation = true;
                 }
                 else
                 {
@@ -171,12 +178,33 @@ namespace AdminApp
                 if (responseSubDeletion.IsSuccessful)
                 {
                     Console.WriteLine("Sub Deletion Created - " + textBoxCreateNameOffice.Text);
+                    flagDeletion = true;
+                    // subscription
                 }
                 else
                 {
                     Console.WriteLine("Error creating sub deletion" + textBoxCreateNameOffice.Text);
                 }
 
+                if (flagCreation == flagDeletion)
+                {
+                    string[] topic = { "api/somiod/" + app + "/" + textBoxCreateNameOffice.Text };
+
+                    mClient.Connect(Guid.NewGuid().ToString());
+                    if (!mClient.IsConnected)
+                    {
+                        Console.WriteLine("Failed to connect to mqtt");
+
+                    }
+                    else
+                    {
+                        //Subscribe to topics
+                        byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
+                        mClient.Subscribe(topic, qosLevels);
+                        topicArray.Add(topic.ToString());
+                    }
+                }
+                
                 getAllOffices();
                 MessageBox.Show("Created " + textBoxCreateNameOffice.Text);
                 textBoxCreateNameOffice.Clear();

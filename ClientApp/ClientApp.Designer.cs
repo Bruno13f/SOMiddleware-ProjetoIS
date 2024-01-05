@@ -38,6 +38,7 @@
             this.comboBoxOffices = new System.Windows.Forms.ComboBox();
             this.groupBoxActiveReserves = new System.Windows.Forms.GroupBox();
             this.richTextBoxActiveReserves = new System.Windows.Forms.RichTextBox();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.groupBoxGetAllOffices.SuspendLayout();
             this.groupBoxReserveOffice.SuspendLayout();
             this.groupBoxActiveReserves.SuspendLayout();
@@ -47,12 +48,13 @@
             // 
             this.richTextBoxOffices.Location = new System.Drawing.Point(20, 23);
             this.richTextBoxOffices.Name = "richTextBoxOffices";
-            this.richTextBoxOffices.Size = new System.Drawing.Size(402, 190);
+            this.richTextBoxOffices.Size = new System.Drawing.Size(402, 159);
             this.richTextBoxOffices.TabIndex = 0;
             this.richTextBoxOffices.Text = "";
             // 
             // groupBoxGetAllOffices
             // 
+            this.groupBoxGetAllOffices.Controls.Add(this.btnRefresh);
             this.groupBoxGetAllOffices.Controls.Add(this.richTextBoxOffices);
             this.groupBoxGetAllOffices.Location = new System.Drawing.Point(25, 34);
             this.groupBoxGetAllOffices.Name = "groupBoxGetAllOffices";
@@ -136,6 +138,16 @@
             this.richTextBoxActiveReserves.TabIndex = 0;
             this.richTextBoxActiveReserves.Text = "";
             // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Location = new System.Drawing.Point(153, 191);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(124, 23);
+            this.btnRefresh.TabIndex = 1;
+            this.btnRefresh.Text = "Refresh Offices";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.button1_Click);
+            // 
             // ClientApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -166,6 +178,7 @@
         private System.Windows.Forms.Label labelChooseOffice;
         private System.Windows.Forms.GroupBox groupBoxActiveReserves;
         private System.Windows.Forms.RichTextBox richTextBoxActiveReserves;
+        private System.Windows.Forms.Button btnRefresh;
     }
 }
 

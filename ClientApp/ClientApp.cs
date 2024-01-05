@@ -170,5 +170,9 @@ namespace ClientApp
             return xmlDoc;
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            getAllOffices();
+        }
     }
 }
