@@ -103,11 +103,11 @@ namespace AdminApp
 
                         if (containerXmlDoc.DocumentElement.ChildNodes.Count == 0)
                         {
-                            comboBoxVacantOffice.Items.Add(containerNode.InnerText);
                             richTextBoxOpenOffices.AppendText(containerNode.InnerText + Environment.NewLine);
                         }
                         else
                         {
+                            comboBoxVacantOffice.Items.Add(containerNode.InnerText);
                             richTextBoxOccupiedOffices.AppendText(containerNode.InnerText + Environment.NewLine);
                         }
                     }
@@ -140,9 +140,47 @@ namespace AdminApp
 
             if (response.IsSuccessful)
             {
+
+                // create subscription
+
+                var requestSubCreation = new RestRequest("/api/somiod/{application}/{container}", Method.Post);
+                requestSubCreation.AddUrlSegment("application", app);
+                requestSubCreation.AddUrlSegment("container", textBoxCreateNameOffice.Text);
+                String xmlCreation = createXmlDocumentSub(textBoxCreateNameOffice.Text + "-SubCreation", "mqtt://127.0.0.1", "1").OuterXml;
+                requestSubCreation.AddParameter("application/xml", xmlCreation, ParameterType.RequestBody);
+
+                var responseSubCreation = client.Execute(requestSubCreation);
+
+                if (responseSubCreation.IsSuccessful)
+                {
+                    Console.WriteLine("Sub Creation Created - " + textBoxCreateNameOffice.Text);
+                }
+                else
+                {
+                    Console.WriteLine("Error creating sub creation" + textBoxCreateNameOffice.Text);
+                }
+
+                var requestSubDeletion = new RestRequest("/api/somiod/{application}/{container}", Method.Post);
+                requestSubDeletion.AddUrlSegment("application", app);
+                requestSubDeletion.AddUrlSegment("container", textBoxCreateNameOffice.Text);
+                String xmlDeletion = createXmlDocumentSub(textBoxCreateNameOffice.Text + "-SubDeletion", "mqtt://127.0.0.1", "2").OuterXml;
+                requestSubDeletion.AddParameter("application/xml", xmlDeletion, ParameterType.RequestBody);
+
+                var responseSubDeletion = client.Execute(requestSubDeletion);
+
+                if (responseSubDeletion.IsSuccessful)
+                {
+                    Console.WriteLine("Sub Deletion Created - " + textBoxCreateNameOffice.Text);
+                }
+                else
+                {
+                    Console.WriteLine("Error creating sub deletion" + textBoxCreateNameOffice.Text);
+                }
+
                 getAllOffices();
-                MessageBox.Show("Created Office " + textBoxCreateNameOffice.Text);
+                MessageBox.Show("Created " + textBoxCreateNameOffice.Text);
                 textBoxCreateNameOffice.Clear();
+
             }
             else
             {
@@ -186,8 +224,47 @@ namespace AdminApp
                 return;
             }
 
+            var mainRequest = new RestRequest("/api/somiod/{application}/{container}", Method.Get);
+            mainRequest.AddUrlSegment("application", app);
+            mainRequest.AddUrlSegment("container", comboBoxVacantOffice.SelectedItem.ToString());
+            mainRequest.RequestFormat = DataFormat.Xml;
+            mainRequest.AddHeader("somiod-discover", "data");
+            mainRequest.AddHeader("Accept", "application/xml");
+
+            var mainResponse = client.Execute(mainRequest);
+
+            if (mainResponse.IsSuccessful)
+            {
+                XmlDocument mainXmlDoc = new XmlDocument();
+                mainXmlDoc.LoadXml(mainResponse.Content);
+
+                foreach (XmlNode containerNode in mainXmlDoc.DocumentElement.ChildNodes)
+                {
+                    var request = new RestRequest("/api/somiod/{application}/{container}/data/{data}", Method.Delete);
+                    request.AddUrlSegment("application", app);
+                    request.AddUrlSegment("container", comboBoxVacantOffice.SelectedItem.ToString());
+                    request.AddUrlSegment("data", containerNode.InnerText);
+
+                    var response = client.Execute(request);
+
+                    if (response.IsSuccessful)
+                    {
+                        MessageBox.Show(comboBoxVacantOffice.SelectedItem.ToString() + " vacated");
+                        getAllOffices();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error vacate " + comboBoxVacantOffice.SelectedItem.ToString());
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Error vacating " + comboBoxVacantOffice.SelectedItem.ToString());
+            }
 
 
+            //vacant
         }
 
         private XmlDocument createXmlDocument(string name, bool flag)
@@ -201,6 +278,32 @@ namespace AdminApp
             XmlElement nameElement = xmlDoc.CreateElement("name");
             nameElement.InnerText = name;
             rootElement.AppendChild(nameElement);
+
+            return xmlDoc;
+        }
+
+        private XmlDocument createXmlDocumentSub(string name, string endpoint, string event_mqtt)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+
+            XmlElement rootElement = xmlDoc.CreateElement("DataOrSubscription");
+            rootElement.SetAttribute("xmlns:i", "http://www.w3.org/2001/XMLSchema-instance");
+            rootElement.SetAttribute("xmlns", "http://schemas.datacontract.org/2004/07/MiddlewareDatabaseAPI.Models");
+            xmlDoc.AppendChild(rootElement);
+            XmlElement endpointElement = xmlDoc.CreateElement("endpoint");
+            endpointElement.InnerText = endpoint;
+            rootElement.AppendChild(endpointElement);
+            XmlElement eventElement = xmlDoc.CreateElement("event_mqtt");
+            eventElement.InnerText = event_mqtt;
+            rootElement.AppendChild(eventElement);
+            XmlElement nameElement = xmlDoc.CreateElement("name");
+            nameElement.InnerText = name;
+            rootElement.AppendChild(nameElement);
+            XmlElement resTypeElement = xmlDoc.CreateElement("res_type");
+            resTypeElement.InnerText = "subscription";
+            rootElement.AppendChild(resTypeElement);
+
+            Console.WriteLine(xmlDoc.OuterXml);
 
             return xmlDoc;
         }
