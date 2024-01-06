@@ -42,21 +42,22 @@
             // 
             // richTextBoxOffices
             // 
-            this.richTextBoxOffices.Location = new System.Drawing.Point(20, 23);
+            this.richTextBoxOffices.Location = new System.Drawing.Point(22, 29);
             this.richTextBoxOffices.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.richTextBoxOffices.Name = "richTextBoxOffices";
-            this.richTextBoxOffices.Size = new System.Drawing.Size(401, 345);
+            this.richTextBoxOffices.ReadOnly = true;
+            this.richTextBoxOffices.Size = new System.Drawing.Size(451, 430);
             this.richTextBoxOffices.TabIndex = 0;
             this.richTextBoxOffices.Text = "";
             // 
             // groupBoxGetAllOffices
             // 
             this.groupBoxGetAllOffices.Controls.Add(this.richTextBoxOffices);
-            this.groupBoxGetAllOffices.Location = new System.Drawing.Point(25, 34);
+            this.groupBoxGetAllOffices.Location = new System.Drawing.Point(28, 42);
             this.groupBoxGetAllOffices.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBoxGetAllOffices.Name = "groupBoxGetAllOffices";
             this.groupBoxGetAllOffices.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBoxGetAllOffices.Size = new System.Drawing.Size(443, 391);
+            this.groupBoxGetAllOffices.Size = new System.Drawing.Size(498, 489);
             this.groupBoxGetAllOffices.TabIndex = 1;
             this.groupBoxGetAllOffices.TabStop = false;
             this.groupBoxGetAllOffices.Text = "Offices";
@@ -68,11 +69,11 @@
             this.groupBoxReserveOffice.Controls.Add(this.labelChooseOffice);
             this.groupBoxReserveOffice.Controls.Add(this.btnReserveOffice);
             this.groupBoxReserveOffice.Controls.Add(this.comboBoxOffices);
-            this.groupBoxReserveOffice.Location = new System.Drawing.Point(485, 34);
+            this.groupBoxReserveOffice.Location = new System.Drawing.Point(546, 42);
             this.groupBoxReserveOffice.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBoxReserveOffice.Name = "groupBoxReserveOffice";
             this.groupBoxReserveOffice.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBoxReserveOffice.Size = new System.Drawing.Size(293, 234);
+            this.groupBoxReserveOffice.Size = new System.Drawing.Size(330, 292);
             this.groupBoxReserveOffice.TabIndex = 2;
             this.groupBoxReserveOffice.TabStop = false;
             this.groupBoxReserveOffice.Text = "Reserve Office";
@@ -80,35 +81,35 @@
             // labelName
             // 
             this.labelName.AutoSize = true;
-            this.labelName.Location = new System.Drawing.Point(107, 113);
+            this.labelName.Location = new System.Drawing.Point(120, 141);
             this.labelName.Name = "labelName";
-            this.labelName.Size = new System.Drawing.Size(75, 16);
+            this.labelName.Size = new System.Drawing.Size(89, 20);
             this.labelName.TabIndex = 4;
             this.labelName.Text = "Your Name";
             // 
             // textBoxName
             // 
-            this.textBoxName.Location = new System.Drawing.Point(28, 130);
+            this.textBoxName.Location = new System.Drawing.Point(32, 162);
             this.textBoxName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxName.Name = "textBoxName";
-            this.textBoxName.Size = new System.Drawing.Size(235, 22);
+            this.textBoxName.Size = new System.Drawing.Size(264, 26);
             this.textBoxName.TabIndex = 3;
             // 
             // labelChooseOffice
             // 
             this.labelChooseOffice.AutoSize = true;
-            this.labelChooseOffice.Location = new System.Drawing.Point(101, 38);
+            this.labelChooseOffice.Location = new System.Drawing.Point(114, 48);
             this.labelChooseOffice.Name = "labelChooseOffice";
-            this.labelChooseOffice.Size = new System.Drawing.Size(91, 16);
+            this.labelChooseOffice.Size = new System.Drawing.Size(110, 20);
             this.labelChooseOffice.TabIndex = 2;
             this.labelChooseOffice.Text = "Choose Office";
             // 
             // btnReserveOffice
             // 
-            this.btnReserveOffice.Location = new System.Drawing.Point(93, 190);
+            this.btnReserveOffice.Location = new System.Drawing.Point(105, 238);
             this.btnReserveOffice.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnReserveOffice.Name = "btnReserveOffice";
-            this.btnReserveOffice.Size = new System.Drawing.Size(117, 25);
+            this.btnReserveOffice.Size = new System.Drawing.Size(132, 31);
             this.btnReserveOffice.TabIndex = 1;
             this.btnReserveOffice.Text = "Request Office";
             this.btnReserveOffice.UseVisualStyleBackColor = true;
@@ -117,17 +118,17 @@
             // comboBoxOffices
             // 
             this.comboBoxOffices.FormattingEnabled = true;
-            this.comboBoxOffices.Location = new System.Drawing.Point(28, 58);
+            this.comboBoxOffices.Location = new System.Drawing.Point(32, 72);
             this.comboBoxOffices.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBoxOffices.Name = "comboBoxOffices";
-            this.comboBoxOffices.Size = new System.Drawing.Size(235, 24);
+            this.comboBoxOffices.Size = new System.Drawing.Size(264, 28);
             this.comboBoxOffices.TabIndex = 0;
             // 
             // ClientApp
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(900, 562);
             this.Controls.Add(this.groupBoxReserveOffice);
             this.Controls.Add(this.groupBoxGetAllOffices);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);

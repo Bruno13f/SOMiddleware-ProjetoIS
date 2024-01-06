@@ -313,6 +313,7 @@
             this.richTextBoxDatas.Location = new System.Drawing.Point(15, 78);
             this.richTextBoxDatas.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.richTextBoxDatas.Name = "richTextBoxDatas";
+            this.richTextBoxDatas.ReadOnly = true;
             this.richTextBoxDatas.Size = new System.Drawing.Size(1141, 269);
             this.richTextBoxDatas.TabIndex = 33;
             this.richTextBoxDatas.Text = "";

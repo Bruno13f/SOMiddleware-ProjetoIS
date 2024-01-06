@@ -30,6 +30,7 @@
         {
             this.btnGetApps = new System.Windows.Forms.Button();
             this.groupAppInfo = new System.Windows.Forms.GroupBox();
+            this.btnEditApp = new System.Windows.Forms.Button();
             this.btnCreateApp = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnDeleteApp = new System.Windows.Forms.Button();
@@ -42,15 +43,15 @@
             this.richTextBoxApps = new System.Windows.Forms.RichTextBox();
             this.btnGetApp = new System.Windows.Forms.Button();
             this.textBoxNameApp = new System.Windows.Forms.TextBox();
-            this.btnEditApp = new System.Windows.Forms.Button();
             this.groupAppInfo.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnGetApps
             // 
-            this.btnGetApps.Location = new System.Drawing.Point(27, 23);
+            this.btnGetApps.Location = new System.Drawing.Point(40, 35);
+            this.btnGetApps.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnGetApps.Name = "btnGetApps";
-            this.btnGetApps.Size = new System.Drawing.Size(94, 23);
+            this.btnGetApps.Size = new System.Drawing.Size(141, 35);
             this.btnGetApps.TabIndex = 0;
             this.btnGetApps.Text = "Get Apps";
             this.btnGetApps.UseVisualStyleBackColor = true;
@@ -68,18 +69,32 @@
             this.groupAppInfo.Controls.Add(this.label3);
             this.groupAppInfo.Controls.Add(this.label2);
             this.groupAppInfo.Controls.Add(this.idApp);
-            this.groupAppInfo.Location = new System.Drawing.Point(27, 311);
+            this.groupAppInfo.Location = new System.Drawing.Point(40, 478);
+            this.groupAppInfo.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupAppInfo.Name = "groupAppInfo";
-            this.groupAppInfo.Size = new System.Drawing.Size(736, 114);
+            this.groupAppInfo.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupAppInfo.Size = new System.Drawing.Size(1104, 175);
             this.groupAppInfo.TabIndex = 2;
             this.groupAppInfo.TabStop = false;
             this.groupAppInfo.Text = "App Info";
             // 
+            // btnEditApp
+            // 
+            this.btnEditApp.Location = new System.Drawing.Point(957, 46);
+            this.btnEditApp.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnEditApp.Name = "btnEditApp";
+            this.btnEditApp.Size = new System.Drawing.Size(117, 35);
+            this.btnEditApp.TabIndex = 9;
+            this.btnEditApp.Text = "Edit";
+            this.btnEditApp.UseVisualStyleBackColor = true;
+            this.btnEditApp.Click += new System.EventHandler(this.btnEditApp_Click);
+            // 
             // btnCreateApp
             // 
-            this.btnCreateApp.Location = new System.Drawing.Point(540, 31);
+            this.btnCreateApp.Location = new System.Drawing.Point(810, 48);
+            this.btnCreateApp.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCreateApp.Name = "btnCreateApp";
-            this.btnCreateApp.Size = new System.Drawing.Size(78, 23);
+            this.btnCreateApp.Size = new System.Drawing.Size(117, 35);
             this.btnCreateApp.TabIndex = 8;
             this.btnCreateApp.Text = "Create";
             this.btnCreateApp.UseVisualStyleBackColor = true;
@@ -87,9 +102,10 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(638, 67);
+            this.btnClear.Location = new System.Drawing.Point(957, 103);
+            this.btnClear.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(78, 23);
+            this.btnClear.Size = new System.Drawing.Size(117, 35);
             this.btnClear.TabIndex = 7;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -97,9 +113,10 @@
             // 
             // btnDeleteApp
             // 
-            this.btnDeleteApp.Location = new System.Drawing.Point(540, 68);
+            this.btnDeleteApp.Location = new System.Drawing.Point(810, 105);
+            this.btnDeleteApp.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnDeleteApp.Name = "btnDeleteApp";
-            this.btnDeleteApp.Size = new System.Drawing.Size(78, 23);
+            this.btnDeleteApp.Size = new System.Drawing.Size(117, 35);
             this.btnDeleteApp.TabIndex = 6;
             this.btnDeleteApp.Text = "Delete";
             this.btnDeleteApp.UseVisualStyleBackColor = true;
@@ -108,66 +125,75 @@
             // textBoxCDT
             // 
             this.textBoxCDT.Enabled = false;
-            this.textBoxCDT.Location = new System.Drawing.Point(302, 33);
+            this.textBoxCDT.Location = new System.Drawing.Point(453, 51);
+            this.textBoxCDT.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxCDT.Name = "textBoxCDT";
-            this.textBoxCDT.Size = new System.Drawing.Size(206, 20);
+            this.textBoxCDT.Size = new System.Drawing.Size(307, 26);
             this.textBoxCDT.TabIndex = 5;
             // 
             // textBoxName
             // 
-            this.textBoxName.Location = new System.Drawing.Point(106, 70);
+            this.textBoxName.Location = new System.Drawing.Point(159, 108);
+            this.textBoxName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxName.Name = "textBoxName";
-            this.textBoxName.Size = new System.Drawing.Size(402, 20);
+            this.textBoxName.Size = new System.Drawing.Size(601, 26);
             this.textBoxName.TabIndex = 4;
             // 
             // textBoxID
             // 
             this.textBoxID.Enabled = false;
-            this.textBoxID.Location = new System.Drawing.Point(106, 33);
+            this.textBoxID.Location = new System.Drawing.Point(159, 51);
+            this.textBoxID.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxID.Name = "textBoxID";
-            this.textBoxID.Size = new System.Drawing.Size(58, 20);
+            this.textBoxID.Size = new System.Drawing.Size(85, 26);
             this.textBoxID.TabIndex = 3;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(193, 36);
+            this.label3.Location = new System.Drawing.Point(290, 55);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(84, 13);
+            this.label3.Size = new System.Drawing.Size(126, 20);
             this.label3.TabIndex = 2;
             this.label3.Text = "Date of Creation";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(27, 73);
+            this.label2.Location = new System.Drawing.Point(40, 112);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 13);
+            this.label2.Size = new System.Drawing.Size(51, 20);
             this.label2.TabIndex = 1;
             this.label2.Text = "Name";
             // 
             // idApp
             // 
             this.idApp.AutoSize = true;
-            this.idApp.Location = new System.Drawing.Point(35, 36);
+            this.idApp.Location = new System.Drawing.Point(52, 55);
+            this.idApp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.idApp.Name = "idApp";
-            this.idApp.Size = new System.Drawing.Size(18, 13);
+            this.idApp.Size = new System.Drawing.Size(26, 20);
             this.idApp.TabIndex = 0;
             this.idApp.Text = "ID";
             // 
             // richTextBoxApps
             // 
-            this.richTextBoxApps.Location = new System.Drawing.Point(27, 64);
+            this.richTextBoxApps.Location = new System.Drawing.Point(40, 98);
+            this.richTextBoxApps.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.richTextBoxApps.Name = "richTextBoxApps";
-            this.richTextBoxApps.Size = new System.Drawing.Size(736, 179);
+            this.richTextBoxApps.ReadOnly = true;
+            this.richTextBoxApps.Size = new System.Drawing.Size(1102, 273);
             this.richTextBoxApps.TabIndex = 3;
             this.richTextBoxApps.Text = "";
             // 
             // btnGetApp
             // 
-            this.btnGetApp.Location = new System.Drawing.Point(27, 272);
+            this.btnGetApp.Location = new System.Drawing.Point(40, 418);
+            this.btnGetApp.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnGetApp.Name = "btnGetApp";
-            this.btnGetApp.Size = new System.Drawing.Size(112, 23);
+            this.btnGetApp.Size = new System.Drawing.Size(168, 35);
             this.btnGetApp.TabIndex = 4;
             this.btnGetApp.Text = "Get Application {?}";
             this.btnGetApp.UseVisualStyleBackColor = true;
@@ -175,31 +201,23 @@
             // 
             // textBoxNameApp
             // 
-            this.textBoxNameApp.Location = new System.Drawing.Point(145, 275);
+            this.textBoxNameApp.Location = new System.Drawing.Point(218, 423);
+            this.textBoxNameApp.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxNameApp.Name = "textBoxNameApp";
-            this.textBoxNameApp.Size = new System.Drawing.Size(99, 20);
+            this.textBoxNameApp.Size = new System.Drawing.Size(146, 26);
             this.textBoxNameApp.TabIndex = 9;
-            // 
-            // btnEditApp
-            // 
-            this.btnEditApp.Location = new System.Drawing.Point(638, 30);
-            this.btnEditApp.Name = "btnEditApp";
-            this.btnEditApp.Size = new System.Drawing.Size(78, 23);
-            this.btnEditApp.TabIndex = 9;
-            this.btnEditApp.Text = "Edit";
-            this.btnEditApp.UseVisualStyleBackColor = true;
-            this.btnEditApp.Click += new System.EventHandler(this.btnEditApp_Click);
             // 
             // AppTester
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1200, 692);
             this.Controls.Add(this.textBoxNameApp);
             this.Controls.Add(this.btnGetApp);
             this.Controls.Add(this.richTextBoxApps);
             this.Controls.Add(this.groupAppInfo);
             this.Controls.Add(this.btnGetApps);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "AppTester";
             this.Text = "Application Tester";
             this.groupAppInfo.ResumeLayout(false);
