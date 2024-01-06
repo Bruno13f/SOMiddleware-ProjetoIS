@@ -97,6 +97,7 @@ namespace AdminApp
                 richTextBoxOccupiedOffices.Clear();
                 comboBoxDeleteOffices.Items.Clear();
                 comboBoxVacantOffice.Items.Clear();
+                comboBoxChangeOffice.Items.Clear();
 
                 if (mainXmlDoc.DocumentElement.ChildNodes.Count == 0)
                 {
@@ -109,6 +110,7 @@ namespace AdminApp
                 {
 
                     comboBoxDeleteOffices.Items.Add(containerNode.InnerText);
+                    comboBoxChangeOffice.Items.Add(containerNode.InnerText);
 
                     var containerRequest = new RestRequest("/api/somiod/{application}/{container}", Method.Get);
                     containerRequest.AddUrlSegment("application", app);
@@ -338,6 +340,43 @@ namespace AdminApp
             Console.WriteLine(xmlDoc.OuterXml);
 
             return xmlDoc;
+        }
+
+        private void buttonChangeOfficeName_Click(object sender, EventArgs e)
+        {
+            if (comboBoxChangeOffice.SelectedItem == null || comboBoxChangeOffice.SelectedItem.ToString() == "No Offices")
+            {
+                MessageBox.Show("Invalid Office");
+                return;
+            }
+
+            if (textBoxChangeOffice.Text == "")
+            {
+                MessageBox.Show("No name specified");
+                return;
+            }
+
+            var request = new RestRequest("/api/somiod/{application}/{container}", Method.Put);
+            request.AddUrlSegment("application", app);
+            request.AddUrlSegment("container", comboBoxChangeOffice.SelectedItem.ToString());
+            request.AddParameter("application/xml", createXmlDocument(textBoxChangeOffice.Text,false).OuterXml, ParameterType.RequestBody);
+
+            var response = client.Execute(request);
+
+            string container = comboBoxChangeOffice.SelectedItem.ToString();
+
+            if (response.IsSuccessful)
+            {
+                byte[] msg = Encoding.UTF8.GetBytes(container + " name changed");
+                mClient.Publish(topic[0], msg);
+                getAllOffices();
+                MessageBox.Show("Office name changed");
+                textBoxChangeOffice.Clear();
+            }
+            else
+            {
+                MessageBox.Show("Error changing " + comboBoxChangeOffice.SelectedItem.ToString() + " to " + textBoxChangeOffice.Text);
+            }
         }
     }
 }

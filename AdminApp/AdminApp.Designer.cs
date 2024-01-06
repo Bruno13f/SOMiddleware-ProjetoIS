@@ -44,11 +44,18 @@
             this.labelChooseOffice2 = new System.Windows.Forms.Label();
             this.comboBoxVacantOffice = new System.Windows.Forms.ComboBox();
             this.buttonVacantOffice = new System.Windows.Forms.Button();
+            this.groupBoxChangeOfficeName = new System.Windows.Forms.GroupBox();
+            this.comboBoxChangeOffice = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBoxChangeOffice = new System.Windows.Forms.TextBox();
+            this.buttonChangeOfficeName = new System.Windows.Forms.Button();
             this.groupBoxGetAllOffices.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBoxCreateOffice.SuspendLayout();
             this.groupBoxDeleteOffice.SuspendLayout();
             this.groupBoxVacantOffice.SuspendLayout();
+            this.groupBoxChangeOfficeName.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBoxGetAllOffices
@@ -100,11 +107,11 @@
             this.groupBoxCreateOffice.Controls.Add(this.labelOfficeName);
             this.groupBoxCreateOffice.Controls.Add(this.textBoxCreateNameOffice);
             this.groupBoxCreateOffice.Controls.Add(this.buttonCreate);
-            this.groupBoxCreateOffice.Location = new System.Drawing.Point(14, 366);
+            this.groupBoxCreateOffice.Location = new System.Drawing.Point(14, 345);
             this.groupBoxCreateOffice.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBoxCreateOffice.Name = "groupBoxCreateOffice";
             this.groupBoxCreateOffice.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBoxCreateOffice.Size = new System.Drawing.Size(242, 148);
+            this.groupBoxCreateOffice.Size = new System.Drawing.Size(242, 169);
             this.groupBoxCreateOffice.TabIndex = 5;
             this.groupBoxCreateOffice.TabStop = false;
             this.groupBoxCreateOffice.Text = "Create Office";
@@ -128,7 +135,7 @@
             // 
             // buttonCreate
             // 
-            this.buttonCreate.Location = new System.Drawing.Point(78, 105);
+            this.buttonCreate.Location = new System.Drawing.Point(78, 119);
             this.buttonCreate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonCreate.Name = "buttonCreate";
             this.buttonCreate.Size = new System.Drawing.Size(84, 29);
@@ -142,11 +149,11 @@
             this.groupBoxDeleteOffice.Controls.Add(this.labelChooseOffice);
             this.groupBoxDeleteOffice.Controls.Add(this.comboBoxDeleteOffices);
             this.groupBoxDeleteOffice.Controls.Add(this.buttonDelete);
-            this.groupBoxDeleteOffice.Location = new System.Drawing.Point(273, 366);
+            this.groupBoxDeleteOffice.Location = new System.Drawing.Point(273, 345);
             this.groupBoxDeleteOffice.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBoxDeleteOffice.Name = "groupBoxDeleteOffice";
             this.groupBoxDeleteOffice.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBoxDeleteOffice.Size = new System.Drawing.Size(291, 148);
+            this.groupBoxDeleteOffice.Size = new System.Drawing.Size(200, 169);
             this.groupBoxDeleteOffice.TabIndex = 6;
             this.groupBoxDeleteOffice.TabStop = false;
             this.groupBoxDeleteOffice.Text = "Delete Office";
@@ -154,7 +161,7 @@
             // labelChooseOffice
             // 
             this.labelChooseOffice.AutoSize = true;
-            this.labelChooseOffice.Location = new System.Drawing.Point(99, 30);
+            this.labelChooseOffice.Location = new System.Drawing.Point(53, 38);
             this.labelChooseOffice.Name = "labelChooseOffice";
             this.labelChooseOffice.Size = new System.Drawing.Size(110, 20);
             this.labelChooseOffice.TabIndex = 2;
@@ -163,15 +170,15 @@
             // comboBoxDeleteOffices
             // 
             this.comboBoxDeleteOffices.FormattingEnabled = true;
-            this.comboBoxDeleteOffices.Location = new System.Drawing.Point(30, 61);
+            this.comboBoxDeleteOffices.Location = new System.Drawing.Point(18, 62);
             this.comboBoxDeleteOffices.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.comboBoxDeleteOffices.Name = "comboBoxDeleteOffices";
-            this.comboBoxDeleteOffices.Size = new System.Drawing.Size(229, 28);
+            this.comboBoxDeleteOffices.Size = new System.Drawing.Size(163, 28);
             this.comboBoxDeleteOffices.TabIndex = 1;
             // 
             // buttonDelete
             // 
-            this.buttonDelete.Location = new System.Drawing.Point(102, 105);
+            this.buttonDelete.Location = new System.Drawing.Point(57, 119);
             this.buttonDelete.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonDelete.Name = "buttonDelete";
             this.buttonDelete.Size = new System.Drawing.Size(84, 29);
@@ -185,11 +192,11 @@
             this.groupBoxVacantOffice.Controls.Add(this.labelChooseOffice2);
             this.groupBoxVacantOffice.Controls.Add(this.comboBoxVacantOffice);
             this.groupBoxVacantOffice.Controls.Add(this.buttonVacantOffice);
-            this.groupBoxVacantOffice.Location = new System.Drawing.Point(583, 366);
+            this.groupBoxVacantOffice.Location = new System.Drawing.Point(492, 345);
             this.groupBoxVacantOffice.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBoxVacantOffice.Name = "groupBoxVacantOffice";
             this.groupBoxVacantOffice.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBoxVacantOffice.Size = new System.Drawing.Size(304, 148);
+            this.groupBoxVacantOffice.Size = new System.Drawing.Size(179, 169);
             this.groupBoxVacantOffice.TabIndex = 7;
             this.groupBoxVacantOffice.TabStop = false;
             this.groupBoxVacantOffice.Text = "Vacant Office";
@@ -197,7 +204,7 @@
             // labelChooseOffice2
             // 
             this.labelChooseOffice2.AutoSize = true;
-            this.labelChooseOffice2.Location = new System.Drawing.Point(98, 30);
+            this.labelChooseOffice2.Location = new System.Drawing.Point(39, 36);
             this.labelChooseOffice2.Name = "labelChooseOffice2";
             this.labelChooseOffice2.Size = new System.Drawing.Size(110, 20);
             this.labelChooseOffice2.TabIndex = 5;
@@ -206,15 +213,15 @@
             // comboBoxVacantOffice
             // 
             this.comboBoxVacantOffice.FormattingEnabled = true;
-            this.comboBoxVacantOffice.Location = new System.Drawing.Point(34, 61);
+            this.comboBoxVacantOffice.Location = new System.Drawing.Point(18, 62);
             this.comboBoxVacantOffice.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.comboBoxVacantOffice.Name = "comboBoxVacantOffice";
-            this.comboBoxVacantOffice.Size = new System.Drawing.Size(229, 28);
+            this.comboBoxVacantOffice.Size = new System.Drawing.Size(142, 28);
             this.comboBoxVacantOffice.TabIndex = 4;
             // 
             // buttonVacantOffice
             // 
-            this.buttonVacantOffice.Location = new System.Drawing.Point(109, 105);
+            this.buttonVacantOffice.Location = new System.Drawing.Point(52, 119);
             this.buttonVacantOffice.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonVacantOffice.Name = "buttonVacantOffice";
             this.buttonVacantOffice.Size = new System.Drawing.Size(84, 29);
@@ -223,11 +230,69 @@
             this.buttonVacantOffice.UseVisualStyleBackColor = true;
             this.buttonVacantOffice.Click += new System.EventHandler(this.buttonVacantOffice_Click);
             // 
+            // groupBoxChangeOfficeName
+            // 
+            this.groupBoxChangeOfficeName.Controls.Add(this.buttonChangeOfficeName);
+            this.groupBoxChangeOfficeName.Controls.Add(this.textBoxChangeOffice);
+            this.groupBoxChangeOfficeName.Controls.Add(this.label2);
+            this.groupBoxChangeOfficeName.Controls.Add(this.label1);
+            this.groupBoxChangeOfficeName.Controls.Add(this.comboBoxChangeOffice);
+            this.groupBoxChangeOfficeName.Location = new System.Drawing.Point(688, 344);
+            this.groupBoxChangeOfficeName.Name = "groupBoxChangeOfficeName";
+            this.groupBoxChangeOfficeName.Size = new System.Drawing.Size(200, 170);
+            this.groupBoxChangeOfficeName.TabIndex = 8;
+            this.groupBoxChangeOfficeName.TabStop = false;
+            this.groupBoxChangeOfficeName.Text = "Change office name";
+            // 
+            // comboBoxChangeOffice
+            // 
+            this.comboBoxChangeOffice.FormattingEnabled = true;
+            this.comboBoxChangeOffice.Location = new System.Drawing.Point(17, 40);
+            this.comboBoxChangeOffice.Name = "comboBoxChangeOffice";
+            this.comboBoxChangeOffice.Size = new System.Drawing.Size(154, 28);
+            this.comboBoxChangeOffice.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(38, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(110, 20);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "Choose Office";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(51, 68);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(86, 20);
+            this.label2.TabIndex = 10;
+            this.label2.Text = "New Name";
+            // 
+            // textBoxChangeOffice
+            // 
+            this.textBoxChangeOffice.Location = new System.Drawing.Point(43, 88);
+            this.textBoxChangeOffice.Name = "textBoxChangeOffice";
+            this.textBoxChangeOffice.Size = new System.Drawing.Size(100, 26);
+            this.textBoxChangeOffice.TabIndex = 11;
+            // 
+            // buttonChangeOfficeName
+            // 
+            this.buttonChangeOfficeName.Location = new System.Drawing.Point(53, 120);
+            this.buttonChangeOfficeName.Name = "buttonChangeOfficeName";
+            this.buttonChangeOfficeName.Size = new System.Drawing.Size(84, 29);
+            this.buttonChangeOfficeName.TabIndex = 12;
+            this.buttonChangeOfficeName.Text = "Change";
+            this.buttonChangeOfficeName.UseVisualStyleBackColor = true;
+            this.buttonChangeOfficeName.Click += new System.EventHandler(this.buttonChangeOfficeName_Click);
+            // 
             // AdminApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(900, 562);
+            this.Controls.Add(this.groupBoxChangeOfficeName);
             this.Controls.Add(this.groupBoxVacantOffice);
             this.Controls.Add(this.groupBoxDeleteOffice);
             this.Controls.Add(this.groupBoxCreateOffice);
@@ -244,6 +309,8 @@
             this.groupBoxDeleteOffice.PerformLayout();
             this.groupBoxVacantOffice.ResumeLayout(false);
             this.groupBoxVacantOffice.PerformLayout();
+            this.groupBoxChangeOfficeName.ResumeLayout(false);
+            this.groupBoxChangeOfficeName.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -266,6 +333,12 @@
         private System.Windows.Forms.Label labelChooseOffice2;
         private System.Windows.Forms.ComboBox comboBoxVacantOffice;
         private System.Windows.Forms.Button buttonVacantOffice;
+        private System.Windows.Forms.GroupBox groupBoxChangeOfficeName;
+        private System.Windows.Forms.TextBox textBoxChangeOffice;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox comboBoxChangeOffice;
+        private System.Windows.Forms.Button buttonChangeOfficeName;
     }
 }
 
