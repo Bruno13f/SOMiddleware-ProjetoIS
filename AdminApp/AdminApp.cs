@@ -63,19 +63,29 @@ namespace AdminApp
 
         private void createLibrary()
         {
-            var request = new RestRequest("/api/somiod", Method.Post);
-            request.AddParameter("application/xml", createXmlDocument("LibraryAdmin", true).OuterXml, ParameterType.RequestBody);
+            var requestVerify = new RestRequest("/api/somiod/{application}", Method.Get);
+            requestVerify.AddUrlSegment("application", app);
+            requestVerify.RequestFormat = DataFormat.Xml;
+            requestVerify.AddHeader("Accept", "application/xml");
 
-            var response = client.Execute(request);
+            var responseVerify = client.Execute(requestVerify);
 
-            if (response.IsSuccessful)
-            {
-                Console.WriteLine("Library Created!");
+            if (!responseVerify.IsSuccessful) {
+                var request = new RestRequest("/api/somiod", Method.Post);
+                request.AddParameter("application/xml", createXmlDocument("LibraryAdmin", true).OuterXml, ParameterType.RequestBody);
+
+                var response = client.Execute(request);
+
+                if (response.IsSuccessful)
+                {
+                    Console.WriteLine("Library Created!");
+                }
+                else
+                {
+                    Console.WriteLine("Error - Library not Created!");
+                }
             }
-            else
-            {
-                Console.WriteLine("Error - Library not Created!");
-            }
+            
         }
 
         private void getAllOffices()
