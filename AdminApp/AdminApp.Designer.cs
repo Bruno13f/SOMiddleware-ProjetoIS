@@ -54,36 +54,44 @@
             // groupBoxGetAllOffices
             // 
             this.groupBoxGetAllOffices.Controls.Add(this.richTextBoxOpenOffices);
-            this.groupBoxGetAllOffices.Location = new System.Drawing.Point(12, 36);
+            this.groupBoxGetAllOffices.Location = new System.Drawing.Point(14, 45);
+            this.groupBoxGetAllOffices.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBoxGetAllOffices.Name = "groupBoxGetAllOffices";
-            this.groupBoxGetAllOffices.Size = new System.Drawing.Size(380, 234);
+            this.groupBoxGetAllOffices.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBoxGetAllOffices.Size = new System.Drawing.Size(428, 292);
             this.groupBoxGetAllOffices.TabIndex = 2;
             this.groupBoxGetAllOffices.TabStop = false;
             this.groupBoxGetAllOffices.Text = "Open Offices";
             // 
             // richTextBoxOpenOffices
             // 
-            this.richTextBoxOpenOffices.Location = new System.Drawing.Point(20, 23);
+            this.richTextBoxOpenOffices.Location = new System.Drawing.Point(22, 29);
+            this.richTextBoxOpenOffices.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.richTextBoxOpenOffices.Name = "richTextBoxOpenOffices";
-            this.richTextBoxOpenOffices.Size = new System.Drawing.Size(336, 190);
+            this.richTextBoxOpenOffices.ReadOnly = true;
+            this.richTextBoxOpenOffices.Size = new System.Drawing.Size(378, 236);
             this.richTextBoxOpenOffices.TabIndex = 0;
             this.richTextBoxOpenOffices.Text = "";
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.richTextBoxOccupiedOffices);
-            this.groupBox1.Location = new System.Drawing.Point(408, 36);
+            this.groupBox1.Location = new System.Drawing.Point(459, 45);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(380, 234);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBox1.Size = new System.Drawing.Size(428, 292);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Occupied Offices";
             // 
             // richTextBoxOccupiedOffices
             // 
-            this.richTextBoxOccupiedOffices.Location = new System.Drawing.Point(20, 23);
+            this.richTextBoxOccupiedOffices.Location = new System.Drawing.Point(22, 29);
+            this.richTextBoxOccupiedOffices.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.richTextBoxOccupiedOffices.Name = "richTextBoxOccupiedOffices";
-            this.richTextBoxOccupiedOffices.Size = new System.Drawing.Size(336, 190);
+            this.richTextBoxOccupiedOffices.ReadOnly = true;
+            this.richTextBoxOccupiedOffices.Size = new System.Drawing.Size(378, 236);
             this.richTextBoxOccupiedOffices.TabIndex = 0;
             this.richTextBoxOccupiedOffices.Text = "";
             // 
@@ -92,9 +100,11 @@
             this.groupBoxCreateOffice.Controls.Add(this.labelOfficeName);
             this.groupBoxCreateOffice.Controls.Add(this.textBoxCreateNameOffice);
             this.groupBoxCreateOffice.Controls.Add(this.buttonCreate);
-            this.groupBoxCreateOffice.Location = new System.Drawing.Point(12, 293);
+            this.groupBoxCreateOffice.Location = new System.Drawing.Point(14, 366);
+            this.groupBoxCreateOffice.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBoxCreateOffice.Name = "groupBoxCreateOffice";
-            this.groupBoxCreateOffice.Size = new System.Drawing.Size(215, 118);
+            this.groupBoxCreateOffice.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBoxCreateOffice.Size = new System.Drawing.Size(242, 148);
             this.groupBoxCreateOffice.TabIndex = 5;
             this.groupBoxCreateOffice.TabStop = false;
             this.groupBoxCreateOffice.Text = "Create Office";
@@ -102,24 +112,26 @@
             // labelOfficeName
             // 
             this.labelOfficeName.AutoSize = true;
-            this.labelOfficeName.Location = new System.Drawing.Point(66, 29);
+            this.labelOfficeName.Location = new System.Drawing.Point(74, 36);
             this.labelOfficeName.Name = "labelOfficeName";
-            this.labelOfficeName.Size = new System.Drawing.Size(81, 16);
+            this.labelOfficeName.Size = new System.Drawing.Size(97, 20);
             this.labelOfficeName.TabIndex = 3;
             this.labelOfficeName.Text = "Office Name";
             // 
             // textBoxCreateNameOffice
             // 
-            this.textBoxCreateNameOffice.Location = new System.Drawing.Point(20, 51);
+            this.textBoxCreateNameOffice.Location = new System.Drawing.Point(22, 64);
+            this.textBoxCreateNameOffice.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.textBoxCreateNameOffice.Name = "textBoxCreateNameOffice";
-            this.textBoxCreateNameOffice.Size = new System.Drawing.Size(180, 22);
+            this.textBoxCreateNameOffice.Size = new System.Drawing.Size(202, 26);
             this.textBoxCreateNameOffice.TabIndex = 1;
             // 
             // buttonCreate
             // 
-            this.buttonCreate.Location = new System.Drawing.Point(69, 84);
+            this.buttonCreate.Location = new System.Drawing.Point(78, 105);
+            this.buttonCreate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonCreate.Name = "buttonCreate";
-            this.buttonCreate.Size = new System.Drawing.Size(75, 23);
+            this.buttonCreate.Size = new System.Drawing.Size(84, 29);
             this.buttonCreate.TabIndex = 0;
             this.buttonCreate.Text = "Create";
             this.buttonCreate.UseVisualStyleBackColor = true;
@@ -130,9 +142,11 @@
             this.groupBoxDeleteOffice.Controls.Add(this.labelChooseOffice);
             this.groupBoxDeleteOffice.Controls.Add(this.comboBoxDeleteOffices);
             this.groupBoxDeleteOffice.Controls.Add(this.buttonDelete);
-            this.groupBoxDeleteOffice.Location = new System.Drawing.Point(243, 293);
+            this.groupBoxDeleteOffice.Location = new System.Drawing.Point(273, 366);
+            this.groupBoxDeleteOffice.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBoxDeleteOffice.Name = "groupBoxDeleteOffice";
-            this.groupBoxDeleteOffice.Size = new System.Drawing.Size(259, 118);
+            this.groupBoxDeleteOffice.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBoxDeleteOffice.Size = new System.Drawing.Size(291, 148);
             this.groupBoxDeleteOffice.TabIndex = 6;
             this.groupBoxDeleteOffice.TabStop = false;
             this.groupBoxDeleteOffice.Text = "Delete Office";
@@ -140,25 +154,27 @@
             // labelChooseOffice
             // 
             this.labelChooseOffice.AutoSize = true;
-            this.labelChooseOffice.Location = new System.Drawing.Point(88, 24);
+            this.labelChooseOffice.Location = new System.Drawing.Point(99, 30);
             this.labelChooseOffice.Name = "labelChooseOffice";
-            this.labelChooseOffice.Size = new System.Drawing.Size(91, 16);
+            this.labelChooseOffice.Size = new System.Drawing.Size(110, 20);
             this.labelChooseOffice.TabIndex = 2;
             this.labelChooseOffice.Text = "Choose Office";
             // 
             // comboBoxDeleteOffices
             // 
             this.comboBoxDeleteOffices.FormattingEnabled = true;
-            this.comboBoxDeleteOffices.Location = new System.Drawing.Point(27, 49);
+            this.comboBoxDeleteOffices.Location = new System.Drawing.Point(30, 61);
+            this.comboBoxDeleteOffices.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.comboBoxDeleteOffices.Name = "comboBoxDeleteOffices";
-            this.comboBoxDeleteOffices.Size = new System.Drawing.Size(204, 24);
+            this.comboBoxDeleteOffices.Size = new System.Drawing.Size(229, 28);
             this.comboBoxDeleteOffices.TabIndex = 1;
             // 
             // buttonDelete
             // 
-            this.buttonDelete.Location = new System.Drawing.Point(91, 84);
+            this.buttonDelete.Location = new System.Drawing.Point(102, 105);
+            this.buttonDelete.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonDelete.Name = "buttonDelete";
-            this.buttonDelete.Size = new System.Drawing.Size(75, 23);
+            this.buttonDelete.Size = new System.Drawing.Size(84, 29);
             this.buttonDelete.TabIndex = 0;
             this.buttonDelete.Text = "Delete";
             this.buttonDelete.UseVisualStyleBackColor = true;
@@ -169,9 +185,11 @@
             this.groupBoxVacantOffice.Controls.Add(this.labelChooseOffice2);
             this.groupBoxVacantOffice.Controls.Add(this.comboBoxVacantOffice);
             this.groupBoxVacantOffice.Controls.Add(this.buttonVacantOffice);
-            this.groupBoxVacantOffice.Location = new System.Drawing.Point(518, 293);
+            this.groupBoxVacantOffice.Location = new System.Drawing.Point(583, 366);
+            this.groupBoxVacantOffice.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBoxVacantOffice.Name = "groupBoxVacantOffice";
-            this.groupBoxVacantOffice.Size = new System.Drawing.Size(270, 118);
+            this.groupBoxVacantOffice.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBoxVacantOffice.Size = new System.Drawing.Size(304, 148);
             this.groupBoxVacantOffice.TabIndex = 7;
             this.groupBoxVacantOffice.TabStop = false;
             this.groupBoxVacantOffice.Text = "Vacant Office";
@@ -179,25 +197,27 @@
             // labelChooseOffice2
             // 
             this.labelChooseOffice2.AutoSize = true;
-            this.labelChooseOffice2.Location = new System.Drawing.Point(87, 24);
+            this.labelChooseOffice2.Location = new System.Drawing.Point(98, 30);
             this.labelChooseOffice2.Name = "labelChooseOffice2";
-            this.labelChooseOffice2.Size = new System.Drawing.Size(91, 16);
+            this.labelChooseOffice2.Size = new System.Drawing.Size(110, 20);
             this.labelChooseOffice2.TabIndex = 5;
             this.labelChooseOffice2.Text = "Choose Office";
             // 
             // comboBoxVacantOffice
             // 
             this.comboBoxVacantOffice.FormattingEnabled = true;
-            this.comboBoxVacantOffice.Location = new System.Drawing.Point(30, 49);
+            this.comboBoxVacantOffice.Location = new System.Drawing.Point(34, 61);
+            this.comboBoxVacantOffice.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.comboBoxVacantOffice.Name = "comboBoxVacantOffice";
-            this.comboBoxVacantOffice.Size = new System.Drawing.Size(204, 24);
+            this.comboBoxVacantOffice.Size = new System.Drawing.Size(229, 28);
             this.comboBoxVacantOffice.TabIndex = 4;
             // 
             // buttonVacantOffice
             // 
-            this.buttonVacantOffice.Location = new System.Drawing.Point(97, 84);
+            this.buttonVacantOffice.Location = new System.Drawing.Point(109, 105);
+            this.buttonVacantOffice.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonVacantOffice.Name = "buttonVacantOffice";
-            this.buttonVacantOffice.Size = new System.Drawing.Size(75, 23);
+            this.buttonVacantOffice.Size = new System.Drawing.Size(84, 29);
             this.buttonVacantOffice.TabIndex = 3;
             this.buttonVacantOffice.Text = "Vacant";
             this.buttonVacantOffice.UseVisualStyleBackColor = true;
@@ -205,14 +225,15 @@
             // 
             // AdminApp
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(900, 562);
             this.Controls.Add(this.groupBoxVacantOffice);
             this.Controls.Add(this.groupBoxDeleteOffice);
             this.Controls.Add(this.groupBoxCreateOffice);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBoxGetAllOffices);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "AdminApp";
             this.Text = "Library Admin";
             this.groupBoxGetAllOffices.ResumeLayout(false);
