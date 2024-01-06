@@ -36,7 +36,7 @@ namespace MiddlewareDatabaseAPI.Controllers
                 {
                     // Header is present and has the correct value
                     List<string> listOfApplications = new List<string>();
-                    string queryString = "SELECT * FROM Application";
+                    string queryString = "SELECT name FROM Application";
 
                     try
                     {
