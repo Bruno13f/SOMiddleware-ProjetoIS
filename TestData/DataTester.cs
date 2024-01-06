@@ -53,13 +53,12 @@ namespace TestData
             request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
                 richTextBoxDatas.Clear();
-
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(response.Content);
 
                 if (xmlDoc.DocumentElement.ChildNodes.Count == 0)
                 {
@@ -75,7 +74,10 @@ namespace TestData
             }
             else
             {
-                MessageBox.Show("Error getting all data name");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error getting all data names");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
         }
 
@@ -108,12 +110,12 @@ namespace TestData
 
             var response = client.Execute(request);
             int id, parent;
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(response.Content);
-
+                
                 foreach (XmlNode node in xmlDoc.DocumentElement.ChildNodes)
                 {
                     switch (node.Name)
@@ -140,7 +142,10 @@ namespace TestData
             }
             else
             {
-                MessageBox.Show("Error getting " + textBoxNameContainer.Text + " information");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error getting " + textBoxNameContainer.Text + " information");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
         }
 
@@ -162,25 +167,31 @@ namespace TestData
             request.AddUrlSegment("application", textBoxNameApp2.Text);
             request.AddUrlSegment("container", textBoxNameContainer2.Text);
             request.AddParameter("application/xml", createXmlDocument(textBoxName.Text, textBoxContent.Text).OuterXml, ParameterType.RequestBody);
+            request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
                 getAllDatas(textBoxNameApp2.Text, textBoxNameContainer2.Text);
-                MessageBox.Show(response.Content.ToString());
+                MessageBox.Show(xmlDoc.DocumentElement.InnerText);
                 textBoxID.Clear();
                 textBoxDTC.Clear();
             }
             else
             {
-                MessageBox.Show("Error creating " + textBoxName.Text + " data");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error creating " + textBoxName.Text + " data");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if(textBoxID.Text == "" && textBoxDTC.Text == "" && textBoxParent.Text == "")
+            if(textBoxID.Text == "" || textBoxDTC.Text == "" || textBoxParent.Text == "")
             {
                 MessageBox.Show("No data loaded");
                 return;
@@ -208,18 +219,24 @@ namespace TestData
             request.AddUrlSegment("application", textBoxNameApp2.Text);
             request.AddUrlSegment("container", textBoxNameContainer2.Text);
             request.AddUrlSegment("data", textBoxNameData2.Text);
-            
+            request.AddHeader("Accept", "application/xml");
+
             var response = client.Execute(request);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
                 getAllDatas(textBoxNameApp2.Text, textBoxNameContainer2.Text);
-                MessageBox.Show(response.Content.ToString());
+                MessageBox.Show(xmlDoc.DocumentElement.InnerText);
                 clearTxtBoxes();
             }
             else
             {
-                MessageBox.Show("Error deleting " + textBoxName.Text + " data");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error deleting " + textBoxName.Text + " data");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
         }
 

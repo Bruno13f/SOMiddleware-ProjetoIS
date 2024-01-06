@@ -49,12 +49,12 @@ namespace TestContainer
 
             var response = client.Execute(request);
 
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
+
             if (response.IsSuccessful)
             {
                 richTextBoxContainers.Clear();
-
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(response.Content);
 
                 if (xmlDoc.DocumentElement.ChildNodes.Count == 0)
                 {
@@ -70,7 +70,10 @@ namespace TestContainer
             }
             else
             {
-                MessageBox.Show("Error getting all containers name");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error getting all containers name");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
         }
 
@@ -98,10 +101,11 @@ namespace TestContainer
             var response = client.Execute(request);
             int id, parent;
 
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
+
             if (response.IsSuccessful)
             {
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(response.Content);
 
                 foreach (XmlNode node in xmlDoc.DocumentElement.ChildNodes)
                 {
@@ -126,7 +130,10 @@ namespace TestContainer
             }
             else
             {
-                MessageBox.Show("Error getting " + textBoxNameContainer.Text + " information");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error getting " + textBoxNameContainer.Text + " information");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
         }
 
@@ -147,25 +154,31 @@ namespace TestContainer
             var request = new RestRequest("/api/somiod/{application}", Method.Post);
             request.AddUrlSegment("application", textBoxNameApp2.Text);
             request.AddParameter("application/xml", createXmlDocument(textBoxName.Text).OuterXml, ParameterType.RequestBody);
+            request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
                 getAllContainers(textBoxNameApp2.Text);
-                MessageBox.Show(response.Content.ToString());
+                MessageBox.Show(xmlDoc.DocumentElement.InnerText);
                 textBoxID.Clear();
                 textBoxDTC.Clear();
             }
             else
             {
-                MessageBox.Show("Error creating " + textBoxNameContainer.Text + " container");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error creating " + textBoxNameContainer.Text + " container");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            if (textBoxNameApp2.Text == "" && textBoxNameContainer.Text == "" && textBoxID.Text == "" && textBoxDTC.Text == "" && textBoxParent.Text == "")
+            if (textBoxNameApp2.Text == "" || textBoxNameContainer.Text == "" || textBoxID.Text == "" || textBoxDTC.Text == "" || textBoxParent.Text == "")
             {
                 MessageBox.Show("No container loaded");
                 return;
@@ -181,19 +194,25 @@ namespace TestContainer
             request.AddUrlSegment("application", textBoxNameApp2.Text);
             request.AddUrlSegment("container", textBoxNameContainer.Text);
             request.AddParameter("application/xml", createXmlDocument(textBoxName.Text).OuterXml, ParameterType.RequestBody);
+            request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
                 getAllContainers(textBoxNameApp2.Text);
-                MessageBox.Show(response.Content.ToString());
+                MessageBox.Show(xmlDoc.DocumentElement.InnerText);
                 textBoxNameContainer.Clear();
             }
             else
             {
-                MessageBox.Show("Error editing " + textBoxNameContainer.Text + " container");
-            }
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error editing " + textBoxNameContainer.Text + " container");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
+            }   
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
@@ -215,18 +234,24 @@ namespace TestContainer
             request.AddUrlSegment("application", textBoxNameApp2.Text);
             request.AddUrlSegment("container", textBoxName.Text);
             request.AddHeader("Content-type", "application/xml");
+            request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
                 getAllContainers(textBoxNameApp2.Text);
-                MessageBox.Show(response.Content.ToString());
+                MessageBox.Show(xmlDoc.DocumentElement.InnerText);
                 clearTxtBoxes();
             }
             else
             {
-                MessageBox.Show("Error editing " + textBoxNameContainer.Text + " container");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error editing " + textBoxNameContainer.Text + " container");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
         }
 
@@ -257,5 +282,7 @@ namespace TestContainer
 
             return xmlDoc;
         }
+
+       
     }
 }

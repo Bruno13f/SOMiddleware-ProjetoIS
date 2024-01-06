@@ -53,13 +53,12 @@ namespace TestSubscription
             request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
                 richTextBoxSubscriptions.Clear();
-
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(response.Content);
 
                 if (xmlDoc.DocumentElement.ChildNodes.Count == 0)
                 {
@@ -74,7 +73,10 @@ namespace TestSubscription
             }
             else
             {
-                MessageBox.Show("Error getting all subscriptions from " + container);
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error getting all subscriptions from " + container);
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
         }
 
@@ -101,11 +103,11 @@ namespace TestSubscription
 
             var response = client.Execute(request);
             int id, parent;
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(response.Content);
 
                 foreach (XmlNode node in xmlDoc.DocumentElement.ChildNodes)
                 {
@@ -139,7 +141,10 @@ namespace TestSubscription
             }
             else
             {
-                MessageBox.Show("Error getting subcription " + textBoxNameSubscription.Text + " info");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error getting subcription " + textBoxNameSubscription.Text + " info");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
 
         }
@@ -181,18 +186,24 @@ namespace TestSubscription
             request.AddUrlSegment("container", textBoxNameContainer.Text);
             String xml = createXmlDocument(textBoxName.Text, textBoxEndpoint.Text, textBoxEvent.Text).OuterXml;
             request.AddParameter("application/xml", xml, ParameterType.RequestBody);
+            request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
                 getAllSubscriptions(textBoxNameApp2.Text, textBoxNameContainer.Text);
-                MessageBox.Show(response.Content.ToString());
+                MessageBox.Show(xmlDoc.DocumentElement.InnerText);
                 clearTxtBoxes();
             }
             else
             {
-                MessageBox.Show("Error creating subcription " + textBoxName.Text);
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error creating subcription " + textBoxName.Text);
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
 
 
@@ -218,18 +229,24 @@ namespace TestSubscription
             request.AddUrlSegment("container", textBoxNameContainer.Text);
             request.AddUrlSegment("subscription", textBoxNameSubscription.Text);
             request.AddHeader("Content-type", "application/xml");
+            request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
                 getAllSubscriptions(textBoxNameApp2.Text, textBoxContainer.Text);
-                MessageBox.Show(response.Content.ToString());
+                MessageBox.Show(xmlDoc.DocumentElement.InnerText);
                 clearTxtBoxes();
             }
             else
             {
-                MessageBox.Show("Error deliting " + textBoxNameSubscription.Text + " subscription");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error deliting " + textBoxNameSubscription.Text + " subscription");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
 
         }
