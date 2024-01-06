@@ -30,11 +30,8 @@ namespace AdminApp
             getAllOffices();
             this.FormClosing += ClientApp_FormClosing;
             mClient.Connect(Guid.NewGuid().ToString());
-            if (!mClient.IsConnected)
-            {
-                Console.WriteLine("Failed to connect to mqtt");
-
-            }
+            if (mClient.IsConnected)
+                mClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
         }
 
         private void ClientApp_FormClosing(object sender, FormClosingEventArgs e)
@@ -58,6 +55,7 @@ namespace AdminApp
         private void Client_MqttMsgPublishReceived(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgPublishEventArgs e)
         {
             this.Invoke((MethodInvoker)delegate () {
+                string message = Encoding.UTF8.GetString(e.Message);
                 MessageBox.Show("An Office has been Reserved");
                 getAllOffices();
             });
@@ -65,19 +63,29 @@ namespace AdminApp
 
         private void createLibrary()
         {
-            var request = new RestRequest("/api/somiod", Method.Post);
-            request.AddParameter("application/xml", createXmlDocument("LibraryAdmin", true).OuterXml, ParameterType.RequestBody);
+            var requestVerify = new RestRequest("/api/somiod/{application}", Method.Get);
+            requestVerify.AddUrlSegment("application", app);
+            requestVerify.RequestFormat = DataFormat.Xml;
+            requestVerify.AddHeader("Accept", "application/xml");
 
-            var response = client.Execute(request);
+            var responseVerify = client.Execute(requestVerify);
 
-            if (response.IsSuccessful)
-            {
-                Console.WriteLine("Library Created!");
+            if (!responseVerify.IsSuccessful) {
+                var request = new RestRequest("/api/somiod", Method.Post);
+                request.AddParameter("application/xml", createXmlDocument("LibraryAdmin", true).OuterXml, ParameterType.RequestBody);
+
+                var response = client.Execute(request);
+
+                if (response.IsSuccessful)
+                {
+                    Console.WriteLine("Library Created!");
+                }
+                else
+                {
+                    Console.WriteLine("Error - Library not Created!");
+                }
             }
-            else
-            {
-                Console.WriteLine("Error - Library not Created!");
-            }
+            
         }
 
         private void getAllOffices()
@@ -99,6 +107,7 @@ namespace AdminApp
                 richTextBoxOccupiedOffices.Clear();
                 comboBoxDeleteOffices.Items.Clear();
                 comboBoxVacantOffice.Items.Clear();
+                comboBoxChangeOffice.Items.Clear();
 
                 if (mainXmlDoc.DocumentElement.ChildNodes.Count == 0)
                 {
@@ -111,6 +120,7 @@ namespace AdminApp
                 {
 
                     comboBoxDeleteOffices.Items.Add(containerNode.InnerText);
+                    comboBoxChangeOffice.Items.Add(containerNode.InnerText);
 
                     var containerRequest = new RestRequest("/api/somiod/{application}/{container}", Method.Get);
                     containerRequest.AddUrlSegment("application", app);
@@ -176,54 +186,28 @@ namespace AdminApp
                 requestSubCreation.AddParameter("application/xml", xmlCreation, ParameterType.RequestBody);
 
                 var responseSubCreation = client.Execute(requestSubCreation);
-                bool flagCreation = false;
-                bool flagDeletion = false;
 
                 if (responseSubCreation.IsSuccessful)
                 {
                     Console.WriteLine("Sub Creation Created - " + textBoxCreateNameOffice.Text);
-                    flagCreation = true;
-                }
-                else
-                {
-                    Console.WriteLine("Error creating sub creation" + textBoxCreateNameOffice.Text);
-                }
-
-                var requestSubDeletion = new RestRequest("/api/somiod/{application}/{container}", Method.Post);
-                requestSubDeletion.AddUrlSegment("application", app);
-                requestSubDeletion.AddUrlSegment("container", textBoxCreateNameOffice.Text);
-                String xmlDeletion = createXmlDocumentSub(textBoxCreateNameOffice.Text + "-SubDeletion", "mqtt://127.0.0.1", "2").OuterXml;
-                requestSubDeletion.AddParameter("application/xml", xmlDeletion, ParameterType.RequestBody);
-
-                var responseSubDeletion = client.Execute(requestSubDeletion);
-
-                if (responseSubDeletion.IsSuccessful)
-                {
-                    Console.WriteLine("Sub Deletion Created - " + textBoxCreateNameOffice.Text);
-                    flagDeletion = true;
-                }
-                else
-                {
-                    Console.WriteLine("Error creating sub deletion" + textBoxCreateNameOffice.Text);
-                }
-
-                if (flagCreation == flagDeletion)
-                {
                     string[] topic = { "api/somiod/" + app + "/" + textBoxCreateNameOffice.Text };
+
 
                     if (!mClient.IsConnected)
                     {
                         Console.WriteLine("Failed to connect to mqtt");
-
                     }
                     else
                     {
-                        mClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
 
                         byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
-                        mClient.Subscribe(new string[] { topic.ToString() }, qosLevels);
+                        mClient.Subscribe(topic, qosLevels);
                         topicArray.Add(topic.ToString());
                     }
+                }
+                else
+                {
+                    Console.WriteLine("Error creating sub creation" + textBoxCreateNameOffice.Text);
                 }
                 
                 getAllOffices();
@@ -366,6 +350,43 @@ namespace AdminApp
             Console.WriteLine(xmlDoc.OuterXml);
 
             return xmlDoc;
+        }
+
+        private void buttonChangeOfficeName_Click(object sender, EventArgs e)
+        {
+            if (comboBoxChangeOffice.SelectedItem == null || comboBoxChangeOffice.SelectedItem.ToString() == "No Offices")
+            {
+                MessageBox.Show("Invalid Office");
+                return;
+            }
+
+            if (textBoxChangeOffice.Text == "")
+            {
+                MessageBox.Show("No name specified");
+                return;
+            }
+
+            var request = new RestRequest("/api/somiod/{application}/{container}", Method.Put);
+            request.AddUrlSegment("application", app);
+            request.AddUrlSegment("container", comboBoxChangeOffice.SelectedItem.ToString());
+            request.AddParameter("application/xml", createXmlDocument(textBoxChangeOffice.Text,false).OuterXml, ParameterType.RequestBody);
+
+            var response = client.Execute(request);
+
+            string container = comboBoxChangeOffice.SelectedItem.ToString();
+
+            if (response.IsSuccessful)
+            {
+                byte[] msg = Encoding.UTF8.GetBytes(container + " name changed");
+                mClient.Publish(topic[0], msg);
+                getAllOffices();
+                MessageBox.Show("Office name changed");
+                textBoxChangeOffice.Clear();
+            }
+            else
+            {
+                MessageBox.Show("Error changing " + comboBoxChangeOffice.SelectedItem.ToString() + " to " + textBoxChangeOffice.Text);
+            }
         }
     }
 }

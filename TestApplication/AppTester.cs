@@ -81,11 +81,12 @@ namespace TestApplication
             var response = client.Execute(request);
             int id;
 
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
+
             if (response.IsSuccessful)
             {
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(response.Content);
-
+               
                 foreach (XmlNode node in xmlDoc.DocumentElement.ChildNodes)
                 {
                     switch (node.Name)
@@ -105,13 +106,16 @@ namespace TestApplication
             }
             else
             {
-                MessageBox.Show("Error getting " + textBoxNameApp.Text + " information");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error getting " + textBoxNameApp.Text + " information");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
         }
 
         private void btnEditApp_Click(object sender, EventArgs e)
         {
-            if (textBoxNameApp.Text == "" && textBoxID.Text == "" && textBoxCDT.Text == "")
+            if (textBoxNameApp.Text == "" || textBoxID.Text == "" || textBoxCDT.Text == "")
             {
                 MessageBox.Show("No application loaded");
                 return;
@@ -126,19 +130,26 @@ namespace TestApplication
 
             var request = new RestRequest("/api/somiod/{application}", Method.Put);
             request.AddUrlSegment("application", textBoxNameApp.Text);
+            request.AddParameter("application/xml", createXmlDocument(textBoxName.Text).OuterXml, ParameterType.RequestBody);
             request.AddHeader("Content-type", "application/xml");
+            request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
                 textBoxNameApp.Clear();
                 getAllApps();
-                MessageBox.Show(response.Content.ToString());
+                MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
             else
             {
-                MessageBox.Show("Error editing " + textBoxNameApp.Text + " application");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error editing " + textBoxNameApp.Text + " application");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
 
         }
@@ -154,19 +165,25 @@ namespace TestApplication
 
             var request = new RestRequest("/api/somiod", Method.Post);
             request.AddParameter("application/xml", createXmlDocument(textBoxName.Text).OuterXml, ParameterType.RequestBody);
+            request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
                 getAllApps();
-                MessageBox.Show(response.Content.ToString());
+                MessageBox.Show(xmlDoc.DocumentElement.InnerText);
                 textBoxID.Clear();
                 textBoxCDT.Clear();
             }
             else
             {
-                MessageBox.Show("Error creating " + textBoxNameApp.Text + " application");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error creating " + textBoxNameApp.Text + " application");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
         }
 
@@ -181,19 +198,25 @@ namespace TestApplication
 
             var request = new RestRequest("/api/somiod/{application}", Method.Delete);
             request.AddUrlSegment("application", textBoxName.Text);
+            request.AddHeader("Accept", "application/xml");
 
             var response = client.Execute(request);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(response.Content);
 
             if (response.IsSuccessful)
             {
                 ClearTextBoxes();
                 textBoxNameApp.Clear();
                 getAllApps();
-                MessageBox.Show(response.Content.ToString());
+                MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
             else
             {
-                MessageBox.Show("Error deleting " + textBoxNameApp.Text + " application");
+                if (xmlDoc.DocumentElement.InnerText == "" || xmlDoc.DocumentElement.InnerText == null)
+                    MessageBox.Show("Error deleting " + textBoxNameApp.Text + " application");
+                else
+                    MessageBox.Show(xmlDoc.DocumentElement.InnerText);
             }
         }
 

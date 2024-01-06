@@ -44,7 +44,7 @@ namespace ClientApp
             else
             {
                 mClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
-                //Subscribe to topics
+                
                 byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
                 mClient.Subscribe(topic, qosLevels);
             }
@@ -75,20 +75,29 @@ namespace ClientApp
 
         private void createLibrary()
         {
-            var request = new RestRequest("/api/somiod", Method.Post);
-            request.AddParameter("application/xml", createXmlDocumentApp(app).OuterXml, ParameterType.RequestBody);
+            var requestVerify = new RestRequest("/api/somiod/{application}", Method.Get);
+            requestVerify.AddUrlSegment("application", app);
+            requestVerify.RequestFormat = DataFormat.Xml;
+            requestVerify.AddHeader("Accept", "application/xml");
 
-            var response = client.Execute(request);
+            var responseVerify = client.Execute(requestVerify);
 
-            if (response.IsSuccessful)
+            if (!responseVerify.IsSuccessful)
             {
-                Console.WriteLine("Library Created!");
-            }
-            else
-            {
-                Console.WriteLine("Error - Library not Created!");
-            }
+                var request = new RestRequest("/api/somiod", Method.Post);
+                request.AddParameter("application/xml", createXmlDocumentApp(app).OuterXml, ParameterType.RequestBody);
 
+                var response = client.Execute(request);
+
+                if (response.IsSuccessful)
+                {
+                    Console.WriteLine("Library Created!");
+                }
+                else
+                {
+                    Console.WriteLine("Error - Library not Created!");
+                }
+            }
         }
 
         private void getAllOffices()
