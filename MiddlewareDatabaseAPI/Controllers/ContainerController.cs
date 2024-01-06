@@ -156,13 +156,6 @@ namespace MiddlewareDatabaseAPI.Controllers
         }
 
         
-        /*[Route("{application}")]
-        [HttpPost]
-        public void PostContainer([FromBody] string value)
-        {
-        }*/
-        
-
         [Route("{application}/{container}")]
         [HttpPut]
         public IHttpActionResult PutContainer(string application, string container, [FromBody] Container value)

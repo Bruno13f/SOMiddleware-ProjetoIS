@@ -408,7 +408,7 @@ namespace MiddlewareDatabaseAPI.Controllers
         private List<string> GetListContainersOfApp (int idApp)
         {
             List<string> listOfContainers = new List<string>();
-            string queryString = "SELECT * FROM Container WHERE parent = @parentContainer";
+            string queryString = "SELECT name FROM Container WHERE parent = @parentContainer";
 
             try
             {

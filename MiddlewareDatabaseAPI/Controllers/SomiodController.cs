@@ -47,7 +47,7 @@ namespace MiddlewareDatabaseAPI.Controllers
         protected bool UniqueName(string nameValue, string table)
         {
             List<string> listOfApplications = new List<string>();
-            string helpQuerryString = "SELECT * FROM " + table;
+            string helpQuerryString = "SELECT name FROM " + table;
 
             try
             {
