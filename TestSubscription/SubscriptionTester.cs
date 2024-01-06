@@ -94,6 +94,12 @@ namespace TestSubscription
                 return;
             }
 
+            if(textBoxNameSubscription.Text == "")
+            {
+                MessageBox.Show("Subscription not specified");
+                return;
+            }
+
             var request = new RestRequest("/api/somiod/{application}/{container}/subscription/{sub}", Method.Get);
             request.AddUrlSegment("application", textBoxNameApp2.Text);
             request.AddUrlSegment("container", textBoxNameContainer.Text);
