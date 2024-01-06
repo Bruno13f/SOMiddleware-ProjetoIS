@@ -40,7 +40,6 @@ namespace ClientApp
             if (!mClient.IsConnected)
             {
                 Console.WriteLine("Failed to connect to mqtt");
-
             }
             else
             {
@@ -156,9 +155,15 @@ namespace ClientApp
 
             var response = client.Execute(request);
 
+            string container = comboBoxOffices.SelectedItem.ToString();
+
             if (response.IsSuccessful)
             {
+                byte[] msg = Encoding.UTF8.GetBytes(container + " was reserved");
+                mClient.Publish(topic[0], msg);
+
                 MessageBox.Show(comboBoxOffices.SelectedItem.ToString() + " reserved");
+                getAllOffices();
             }
             else
             {
