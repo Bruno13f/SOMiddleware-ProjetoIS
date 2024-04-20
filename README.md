@@ -8,7 +8,7 @@ Designed to create a standardized approach for accessing, writing, and notifying
 
 ### Project Objective:
 UnifiedDataHub aims to establish a service-oriented middleware that standardizes data access, writing, and notification across various application domains, promoting interoperability and open data principles.
-Along with the standard Middelware we created a application to manage study rooms of the library, as it can be seen in the attached image.
+Along with the standard Middelware we created a application to manage study rooms of a library, as it can be seen in the attached image.
 
 ![IS](https://github.com/Bruno13f/SOMiddleware-ProjetoIS/assets/122650083/0b64eb64-67cd-4ac8-9726-6ec54bd86c1a)
 
